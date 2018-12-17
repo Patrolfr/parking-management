@@ -13,22 +13,7 @@ public class ToukparkingApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(ToukparkingApplication.class, args);
-
-
-		System.out.println("Hello in parking app;");
-
-		ParkingMeter parkingMeter = new ParkingMeter();
-		parkingMeter.setStartedAt(LocalDateTime.of(2018,12,15, 16, 56));
-        parkingMeter.setStoppedAt(LocalDateTime.now());
-
-        System.out.println(ParkingCodeGenerator.getCode());
-        System.out.println(ParkingCodeGenerator.getCode());
-        System.out.println(ParkingCodeGenerator.getCode());
-        System.out.println(ParkingCodeGenerator.getCode());
-
-        System.out.println(parkingMeter.getStartedAt());
-        System.out.println(parkingMeter.getStoppedAt());
-        System.out.println(parkingMeter.parkingTimeInHours());
+		System.out.println("Hello in toukparikng REST");
 
 	}
 

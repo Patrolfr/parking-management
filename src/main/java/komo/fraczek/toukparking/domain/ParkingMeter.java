@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 public class ParkingMeter {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-//    Holds registration number of vehicle
+//    Holds vehicle registration number
     private String numberPlate;
 
 //    Holds parking ticket code generated for driver
@@ -36,8 +36,20 @@ public class ParkingMeter {
         return (int) Duration.between(startedAt, stoppedAt).toHours() + 1;
     }
 
+//    counstructors, getters/setter
 
-//
+    public ParkingMeter(String numberPlate, DriverType driverType) {
+        this.numberPlate = numberPlate;
+        this.driverType = driverType;
+
+        this.parkingStatus = ParkingStatus.OCCUPIED;
+        this.parkingCode = ParkingCodeGenerator.getCode();
+        this.startedAt = LocalDateTime.now();
+    }
+
+    public ParkingMeter() {
+    }
+
     public Long getId() {
         return Id;
     }
@@ -92,5 +104,18 @@ public class ParkingMeter {
 
     public void setStoppedAt(LocalDateTime stoppedAt) {
         this.stoppedAt = stoppedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "ParkingMeter{" +
+                "Id=" + Id +
+                ", numberPlate='" + numberPlate + '\'' +
+                ", parkingCode='" + parkingCode + '\'' +
+                ", startedAt=" + startedAt +
+                ", stoppedAt=" + stoppedAt +
+                ", parkingStatus=" + parkingStatus +
+                ", driverType=" + driverType +
+                '}';
     }
 }

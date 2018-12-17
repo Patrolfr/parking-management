@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class Runner implements CommandLineRunner {
@@ -19,16 +20,12 @@ public class Runner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        ParkingMeter parkingMeter = new ParkingMeter();
-        parkingMeter.setStartedAt(LocalDateTime.of(2018,12,15, 16, 56));
-        parkingMeter.setStoppedAt(LocalDateTime.now());
-        parkingMeter.setParkingCode("KOD-123");
-        parkingMeter.setNumberPlate("ahaso12093123");
-        parkingMeter.setDriverType(DriverType.REGULAR);
-        parkingMeter.setParkingStatus(ParkingStatus.FINISHED);
-//        parkingRepository.save(parkingMeter);
+
+        Optional<ParkingMeter> meterTaken = parkingRepository.findByNumberPlate("WDZ2123");
+        System.out.println("meterTaken.isPresent: " + meterTaken.isPresent());
 
 
+        if (meterTaken.isPresent() ) System.out.println(meterTaken.get().toString());
     }
 
 }
