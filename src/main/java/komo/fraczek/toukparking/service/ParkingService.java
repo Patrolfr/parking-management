@@ -61,6 +61,12 @@ public class ParkingService {
 
 
 
-
+//    /**
+//     *  Method should be used only by unit tests.
+//     *  @param parkingRepository
+//     */
+    public void setParkingRepository(ParkingRepository parkingRepository){
+        this.parkingRepository = parkingRepository;
+    }
 
 }

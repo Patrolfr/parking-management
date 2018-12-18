@@ -118,4 +118,13 @@ public class ParkingMeter {
                 ", driverType=" + driverType +
                 '}';
     }
+
+
+    public ParkingMeter(String numberPlate, String parkingCode, LocalDateTime startedAt, ParkingStatus parkingStatus, DriverType driverType) {
+        this.numberPlate = numberPlate;
+        this.parkingCode = parkingCode;
+        this.startedAt = startedAt;
+        this.parkingStatus = parkingStatus;
+        this.driverType = driverType;
+    }
 }
