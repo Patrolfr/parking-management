@@ -20,7 +20,7 @@ public class ParkingService {
     private static final Logger logger = LoggerFactory.getLogger(ParkingService.class);
 
 
-    @Autowired(required = true)
+//    @Autowired(required = true)
     private ParkingRepository parkingRepository;
 
 
@@ -31,6 +31,7 @@ public class ParkingService {
 
         return newParkingMeter.getParkingCode();
     }
+
 
     public ParkingBill finishParkingActivity(String parkingCode){
 
@@ -48,6 +49,7 @@ public class ParkingService {
         return new ParkingBill(meter.parkingTimeInHours(), meter.getNumberPlate(), meter.getDriverType());
     }
 
+
     public ParkingMeter getMeterByNumberPlateOrThrowEx(String numberPlate){
         Optional<ParkingMeter> byNumberPlate = parkingRepository.findByNumberPlate(numberPlate);
 
@@ -61,12 +63,12 @@ public class ParkingService {
 
 
 
+
 //    /**
 //     *  Method should be used only by unit tests.
-//     *  @param parkingRepository
 //     */
+    @Autowired
     public void setParkingRepository(ParkingRepository parkingRepository){
         this.parkingRepository = parkingRepository;
     }
-
 }

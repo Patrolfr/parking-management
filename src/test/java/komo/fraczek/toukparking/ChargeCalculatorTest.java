@@ -1,4 +1,4 @@
-package komo.fraczek.toukparking.arch;
+package komo.fraczek.toukparking;
 
 //import komo.fraczek.toukparking.charge.ChargeCalculator;
 //import komo.fraczek.toukparking.domain.DriverType;

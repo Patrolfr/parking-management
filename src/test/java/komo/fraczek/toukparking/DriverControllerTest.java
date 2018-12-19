@@ -1,4 +1,4 @@
-package komo.fraczek.toukparking.arch;
+package komo.fraczek.toukparking;
 //
 //import komo.fraczek.toukparking.resource.DriverController;
 //import komo.fraczek.toukparking.service.ParkingService;
