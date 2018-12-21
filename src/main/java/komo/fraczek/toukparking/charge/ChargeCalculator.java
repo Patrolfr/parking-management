@@ -8,6 +8,6 @@ public class ChargeCalculator {
 
 //        Math..
 
-        return 10.00;
+        return 1.35 * numberOfHours;
     }
 }

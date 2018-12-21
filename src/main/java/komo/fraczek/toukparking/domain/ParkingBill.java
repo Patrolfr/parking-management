@@ -1,18 +1,26 @@
-package komo.fraczek.toukparking.charge;
+package komo.fraczek.toukparking.domain;
 
 import komo.fraczek.toukparking.domain.DriverType;
 
 public class ParkingBill {
 
-    private int parkingTimeInHours;
-
     private String vehicleNumberPlate;
 
     private DriverType driverType;
 
+    private int parkingTimeInHours;
+
     private double parkingFee;
 
     public ParkingBill() {
+    }
+
+
+    public ParkingBill(String vehicleNumberPlate, DriverType driverType, int parkingTimeInHours, double parkingFee) {
+        this.vehicleNumberPlate = vehicleNumberPlate;
+        this.driverType = driverType;
+        this.parkingTimeInHours = parkingTimeInHours;
+        this.parkingFee = parkingFee;
     }
 
     public ParkingBill(int parkingTimeInHours, String vehicleNumberPlate, DriverType driverType) {

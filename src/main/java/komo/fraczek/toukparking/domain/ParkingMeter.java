@@ -1,9 +1,14 @@
 package komo.fraczek.toukparking.domain;
 
 
+import org.springframework.lang.Nullable;
+
 import javax.persistence.*;
+import javax.validation.constraints.Null;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 public class ParkingMeter {
@@ -12,42 +17,62 @@ public class ParkingMeter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-//    Holds vehicle registration number
-    private String numberPlate;
-
-//    Holds parking ticket code generated for driver
-    private String parkingCode;
-
-//    Beggining/end of the activity
-    private LocalDateTime startedAt, stoppedAt;
-
-//    Parking activity status
+    //    Parking activity status
     @Enumerated(EnumType.STRING)
     private ParkingStatus parkingStatus;
 
-//    Driver type
+    //    Driver type
     @Enumerated(EnumType.STRING)
     private DriverType driverType;
+
+    //    Holds vehicle registration number
+    private String numberPlate;
+
+    //    Holds parking ticket code generated for driver
+    private String parkingCode;
+
+    //    Beggining of the activity
+    private LocalDateTime startedAt;
+
+    //   atribute used in JpaRepository getByStoppedAtDate method for convenient daily income calculation
+    private LocalDate stoppedAtDate;
+    private LocalTime stoppedAtTime;
+
+//    @Nullable
+//    @Transient
+    private double parkingFee;
+
 
 
 //    +1 becouse first hour also counts,
 //    maybe substract 10 mins to give driver some extra time(?)
     public int parkingTimeInHours() {
-        return (int) Duration.between(startedAt, stoppedAt).toHours() + 1;
+        return (int) Duration.between(startedAt, LocalDateTime.of(stoppedAtDate, stoppedAtTime)).toHours() + 1;
     }
 
-//    counstructors, getters/setter
 
     public ParkingMeter(String numberPlate, DriverType driverType) {
         this.numberPlate = numberPlate;
         this.driverType = driverType;
 
+        this.parkingFee = 0.0;
         this.parkingStatus = ParkingStatus.OCCUPIED;
         this.parkingCode = ParkingCodeGenerator.getCode();
         this.startedAt = LocalDateTime.now();
     }
 
+
+//    counstructors, getters/setter
+
     public ParkingMeter() {
+    }
+
+    public ParkingMeter(String numberPlate, String parkingCode, LocalDateTime startedAt, ParkingStatus parkingStatus, DriverType driverType) {
+        this.numberPlate = numberPlate;
+        this.parkingCode = parkingCode;
+        this.startedAt = startedAt;
+        this.parkingStatus = parkingStatus;
+        this.driverType = driverType;
     }
 
     public Long getId() {
@@ -98,12 +123,28 @@ public class ParkingMeter {
         this.startedAt = startedAt;
     }
 
-    public LocalDateTime getStoppedAt() {
-        return stoppedAt;
+    public LocalDate getStoppedAtDate() {
+        return stoppedAtDate;
     }
 
-    public void setStoppedAt(LocalDateTime stoppedAt) {
-        this.stoppedAt = stoppedAt;
+    public void setStoppedAtDate(LocalDate stoppedAtDate) {
+        this.stoppedAtDate = stoppedAtDate;
+    }
+
+    public LocalTime getStoppedAtTime() {
+        return stoppedAtTime;
+    }
+
+    public void setStoppedAtTime(LocalTime stoppedAtTime) {
+        this.stoppedAtTime = stoppedAtTime;
+    }
+
+    public double getParkingFee() {
+        return parkingFee;
+    }
+
+    public void setParkingFee(double parkingFee) {
+        this.parkingFee = parkingFee;
     }
 
     @Override
@@ -113,18 +154,9 @@ public class ParkingMeter {
                 ", numberPlate='" + numberPlate + '\'' +
                 ", parkingCode='" + parkingCode + '\'' +
                 ", startedAt=" + startedAt +
-                ", stoppedAt=" + stoppedAt +
+                ", stoppedAt=" + stoppedAtDate + " " + stoppedAtTime +
                 ", parkingStatus=" + parkingStatus +
                 ", driverType=" + driverType +
                 '}';
-    }
-
-
-    public ParkingMeter(String numberPlate, String parkingCode, LocalDateTime startedAt, ParkingStatus parkingStatus, DriverType driverType) {
-        this.numberPlate = numberPlate;
-        this.parkingCode = parkingCode;
-        this.startedAt = startedAt;
-        this.parkingStatus = parkingStatus;
-        this.driverType = driverType;
     }
 }

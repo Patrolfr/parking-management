@@ -4,7 +4,7 @@ package komo.fraczek.toukparking.resource;
 import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.charge.ChargeCalculator;
 import komo.fraczek.toukparking.charge.DummyCurrencyRateProviderService;
-import komo.fraczek.toukparking.charge.ParkingBill;
+import komo.fraczek.toukparking.domain.ParkingBill;
 import komo.fraczek.toukparking.service.ParkingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

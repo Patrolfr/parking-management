@@ -1,6 +1,6 @@
 package komo.fraczek.toukparking;
 
-import komo.fraczek.toukparking.charge.ParkingBill;
+import komo.fraczek.toukparking.domain.ParkingBill;
 import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.domain.ParkingMeter;
 import komo.fraczek.toukparking.domain.ParkingStatus;
@@ -56,7 +56,9 @@ public class ParkingServiceTest {
         assertEquals(returned.getParkingCode(), meter.getParkingCode());
         assertEquals(returned.getDriverType(), meter.getDriverType());
         assertEquals(returned.getStartedAt(), meter.getStartedAt());
-        assertNull(returned.getStoppedAt());
+//        assertNull(returned.getStoppedAt());
+        assertNull(returned.getStoppedAtDate());
+        assertNull(returned.getStoppedAtTime());
     }
 
 
