@@ -1,31 +1,46 @@
 package komo.fraczek.toukparking.domain;
 
-import komo.fraczek.toukparking.domain.DriverType;
 
+import javax.persistence.*;
+import java.time.LocalDate;
+
+
+@Entity
 public class ParkingBill {
 
-    private String vehicleNumberPlate;
 
+    @javax.persistence.Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
+
+    //    Driver type
+    @Enumerated(EnumType.STRING)
     private DriverType driverType;
 
     private int parkingTimeInHours;
+
+    private LocalDate date;
 
     private double parkingFee;
 
     public ParkingBill() {
     }
 
+    public ParkingBill(DriverType driverType, int parkingTimeInHours, LocalDate date, double parkingFee) {
+        this.driverType = driverType;
+        this.parkingTimeInHours = parkingTimeInHours;
+        this.date = date;
+        this.parkingFee = parkingFee;
+    }
 
-    public ParkingBill(String vehicleNumberPlate, DriverType driverType, int parkingTimeInHours, double parkingFee) {
-        this.vehicleNumberPlate = vehicleNumberPlate;
+    public ParkingBill(DriverType driverType, int parkingTimeInHours, double parkingFee) {
         this.driverType = driverType;
         this.parkingTimeInHours = parkingTimeInHours;
         this.parkingFee = parkingFee;
     }
 
-    public ParkingBill(int parkingTimeInHours, String vehicleNumberPlate, DriverType driverType) {
+    public ParkingBill(int parkingTimeInHours, DriverType driverType) {
         this.parkingTimeInHours = parkingTimeInHours;
-        this.vehicleNumberPlate = vehicleNumberPlate;
         this.driverType = driverType;
     }
 
@@ -35,14 +50,6 @@ public class ParkingBill {
 
     public void setParkingTimeInHours(int parkingTimeInHours) {
         this.parkingTimeInHours = parkingTimeInHours;
-    }
-
-    public String getVehicleNumberPlate() {
-        return vehicleNumberPlate;
-    }
-
-    public void setVehicleNumberPlate(String vehicleNumberPlate) {
-        this.vehicleNumberPlate = vehicleNumberPlate;
     }
 
     public DriverType getDriverType() {
@@ -60,4 +67,5 @@ public class ParkingBill {
     public void setParkingFee(double parkingFee) {
         this.parkingFee = parkingFee;
     }
+
 }

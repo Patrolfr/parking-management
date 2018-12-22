@@ -24,9 +24,16 @@ public class ParkingService {
 
     private ParkingRepository parkingRepository;
 
+    private BillRepository billRepository;
+
     @Autowired
     public void setParkingRepository(ParkingRepository parkingRepository) {
         this.parkingRepository = parkingRepository;
+    }
+
+    @Autowired
+    public void setBillRepository(BillRepository billRepository){
+        this.billRepository = billRepository;
     }
 
 
@@ -52,10 +59,14 @@ public class ParkingService {
         meter.setStoppedAtTime(LocalTime.now());
         meter.setParkingStatus(ParkingStatus.FINISHED);
         //calculate
-        meter.setParkingFee(ChargeCalculator.calculateCharge(meter.parkingTimeInHours(), meter.getDriverType()));
         parkingRepository.save(meter);
 
-        return new ParkingBill(meter.getNumberPlate(), meter.getDriverType(), meter.parkingTimeInHours(), meter.getParkingFee());
+//        bill
+        double fee = ChargeCalculator.calculateCharge(meter.calculateParkingTimeInHours(), meter.getDriverType());
+
+        ParkingBill parkingBill = new ParkingBill(meter.getDriverType(), meter.calculateParkingTimeInHours(), meter.getStoppedAtDate(), fee);
+
+        return parkingBill;
     }
 
 
@@ -73,9 +84,9 @@ public class ParkingService {
 
     public double calculateDailyIncome(LocalDate localDate) {
 
-        return parkingRepository.findAllByStoppedAtDate(localDate)
+        return billRepository.findByDate(localDate)
                                 .stream()
-                                .mapToDouble(ParkingMeter::getParkingFee)
+                                .mapToDouble(ParkingBill::getParkingFee)
                                 .sum();
     }
 

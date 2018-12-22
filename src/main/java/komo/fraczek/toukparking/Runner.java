@@ -35,6 +35,10 @@ public class Runner implements CommandLineRunner {
 
         double v = parkingService.calculateDailyIncome(localDate);
 
+        List<ParkingMeter> all = parkingRepository.findAll();
+
+        all.forEach(System.out::println);
+
         System.out.println(v);
 
     }

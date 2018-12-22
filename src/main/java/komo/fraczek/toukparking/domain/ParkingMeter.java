@@ -40,13 +40,13 @@ public class ParkingMeter {
 
 //    @Nullable
 //    @Transient
-    private double parkingFee;
+//    private double parkingFee;
 
 
 
 //    +1 becouse first hour also counts,
 //    maybe substract 10 mins to give driver some extra time(?)
-    public int parkingTimeInHours() {
+    public int calculateParkingTimeInHours() {
         return (int) Duration.between(startedAt, LocalDateTime.of(stoppedAtDate, stoppedAtTime)).toHours() + 1;
     }
 
@@ -55,7 +55,7 @@ public class ParkingMeter {
         this.numberPlate = numberPlate;
         this.driverType = driverType;
 
-        this.parkingFee = 0.0;
+//        this.parkingFee = 0.0;
         this.parkingStatus = ParkingStatus.OCCUPIED;
         this.parkingCode = ParkingCodeGenerator.getCode();
         this.startedAt = LocalDateTime.now();
@@ -139,13 +139,13 @@ public class ParkingMeter {
         this.stoppedAtTime = stoppedAtTime;
     }
 
-    public double getParkingFee() {
-        return parkingFee;
-    }
-
-    public void setParkingFee(double parkingFee) {
-        this.parkingFee = parkingFee;
-    }
+//    public double getParkingFee() {
+//        return parkingFee;
+//    }
+//
+//    public void setParkingFee(double parkingFee) {
+//        this.parkingFee = parkingFee;
+//    }
 
     @Override
     public String toString() {
@@ -159,4 +159,5 @@ public class ParkingMeter {
                 ", driverType=" + driverType +
                 '}';
     }
+
 }
