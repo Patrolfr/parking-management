@@ -3,6 +3,7 @@ package komo.fraczek.toukparking;
 import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.domain.ParkingMeter;
 import komo.fraczek.toukparking.domain.ParkingStatus;
+import komo.fraczek.toukparking.service.BillRepository;
 import komo.fraczek.toukparking.service.ParkingRepository;
 import komo.fraczek.toukparking.service.ParkingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,14 @@ public class Runner implements CommandLineRunner {
     @Autowired
     ParkingService parkingService;
 
+    @Autowired
+    BillRepository billRepository;
+
     @Override
     public void run(String... args) throws Exception {
 
 
-        LocalDate localDate = LocalDate.of(2018, 12, 05);
+        LocalDate localDate = LocalDate.of(2018, 12, 15);
 
         double v = parkingService.calculateDailyIncome(localDate);
 
@@ -40,6 +44,8 @@ public class Runner implements CommandLineRunner {
         all.forEach(System.out::println);
 
         System.out.println(v);
+
+        System.out.println(billRepository.findByNumberPlateAndParkingStatus("WEQ2123", ParkingStatus.FINISHED).get().toString());
 
     }
 

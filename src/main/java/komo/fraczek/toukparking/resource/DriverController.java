@@ -32,20 +32,14 @@ public class DriverController {
 
         logger.info("numberPlate: " + numberPlate +"; givenDriverType: " + givenDriverType);
 
+
         return givenDriverType == null ? parkingService.initParkingActivity(numberPlate, DriverType.REGULAR) : parkingService.initParkingActivity(numberPlate, givenDriverType);
     }
 
     @PostMapping(path = "/stopMeter/{parkingCode}")
     public ParkingBill stopParkingMeter(@PathVariable String parkingCode){
 
-        ParkingBill parkingBill = parkingService.finishParkingActivity(parkingCode);
-
-        double feeInPLN = ChargeCalculator.calculateCharge(parkingBill.getParkingTimeInHours(), parkingBill.getDriverType());
-
-        // posibillity of implementing real currency rate service... with BigDecimal(?)
-        parkingBill.setParkingFee(feeInPLN * currencyService.getCurrencyRate("PLN"));
-
-        return parkingBill;
+        return parkingService.finishParkingActivity(parkingCode);
     }
 
     //start parking meter using request params (???),

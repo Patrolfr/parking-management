@@ -17,6 +17,14 @@ public class ParkingBill {
     @Enumerated(EnumType.STRING)
     private DriverType driverType;
 
+    //    Parking activity status
+    @Enumerated(EnumType.STRING)
+    private ParkingStatus parkingStatus;
+
+
+    //    Holds vehicle registration number
+    private String numberPlate;
+
     private int parkingTimeInHours;
 
     private LocalDate date;
@@ -26,23 +34,6 @@ public class ParkingBill {
     public ParkingBill() {
     }
 
-    public ParkingBill(DriverType driverType, int parkingTimeInHours, LocalDate date, double parkingFee) {
-        this.driverType = driverType;
-        this.parkingTimeInHours = parkingTimeInHours;
-        this.date = date;
-        this.parkingFee = parkingFee;
-    }
-
-    public ParkingBill(DriverType driverType, int parkingTimeInHours, double parkingFee) {
-        this.driverType = driverType;
-        this.parkingTimeInHours = parkingTimeInHours;
-        this.parkingFee = parkingFee;
-    }
-
-    public ParkingBill(int parkingTimeInHours, DriverType driverType) {
-        this.parkingTimeInHours = parkingTimeInHours;
-        this.driverType = driverType;
-    }
 
     public int getParkingTimeInHours() {
         return parkingTimeInHours;
@@ -68,4 +59,40 @@ public class ParkingBill {
         this.parkingFee = parkingFee;
     }
 
+    public String getNumberPlate() {
+        return numberPlate;
+    }
+
+    public void setNumberPlate(String numberPlate) {
+        this.numberPlate = numberPlate;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public ParkingStatus getParkingStatus() {
+        return parkingStatus;
+    }
+
+    public void setParkingStatus(ParkingStatus parkingStatus) {
+        this.parkingStatus = parkingStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "ParkingBill{" +
+                "Id=" + Id +
+                ", driverType=" + driverType +
+                ", parkingStatus=" + parkingStatus +
+                ", numberPlate='" + numberPlate + '\'' +
+                ", parkingTimeInHours=" + parkingTimeInHours +
+                ", date=" + date +
+                ", parkingFee=" + parkingFee +
+                '}';
+    }
 }

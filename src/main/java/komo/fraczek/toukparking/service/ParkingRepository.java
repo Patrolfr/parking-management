@@ -14,10 +14,10 @@ import java.util.Optional;
 @Repository
 public interface ParkingRepository extends JpaRepository<ParkingMeter, Long> {
 
-    Optional<ParkingMeter> findByNumberPlate(String s);
+//    Optional<ParkingMeter> findByNumberPlate(String s);
 
     Optional<ParkingMeter> findByParkingCode(String s);
 
-    List<ParkingMeter> findAllByStoppedAtDate(LocalDate localDate);
+//    List<ParkingMeter> findAllByStoppedAtDate(LocalDate localDate);
 
 }
