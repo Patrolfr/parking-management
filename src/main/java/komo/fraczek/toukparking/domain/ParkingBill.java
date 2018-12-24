@@ -13,27 +13,42 @@ public class ParkingBill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    //    Driver type
+//    Driver type
     @Enumerated(EnumType.STRING)
     private DriverType driverType;
 
-    //    Parking activity status
+//    Parking activity status
     @Enumerated(EnumType.STRING)
     private ParkingStatus parkingStatus;
 
-
-    //    Holds vehicle registration number
+//    Vehicle registration number
     private String numberPlate;
 
     private int parkingTimeInHours;
 
+//    Bill issue date
     private LocalDate date;
 
     private double parkingFee;
 
-    public ParkingBill() {
+
+    public ParkingBill(DriverType driverType, String numberPlate) {
+        this.driverType = driverType;
+        this.numberPlate = numberPlate;
+        this.parkingStatus = ParkingStatus.OCCUPIED;
     }
 
+//
+    public ParkingBill() { }
+
+    public ParkingBill(DriverType driverType, ParkingStatus parkingStatus, String numberPlate, int parkingTimeInHours, LocalDate date, double parkingFee) {
+        this.driverType = driverType;
+        this.parkingStatus = parkingStatus;
+        this.numberPlate = numberPlate;
+        this.parkingTimeInHours = parkingTimeInHours;
+        this.date = date;
+        this.parkingFee = parkingFee;
+    }
 
     public int getParkingTimeInHours() {
         return parkingTimeInHours;

@@ -1,6 +1,5 @@
 package komo.fraczek.toukparking.resource;
 
-
 import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.charge.ChargeCalculator;
 import komo.fraczek.toukparking.charge.DummyCurrencyRateProviderService;
@@ -25,24 +24,22 @@ public class DriverController {
     DummyCurrencyRateProviderService currencyService;
 
 
-    //there is no need of passing driver type, REGULAR is default
-    @PostMapping(path = {"/startMeter/{numberPlate}/{driverType}", "/startMeter/{numberPlate}" })
-    public String startParkingMeter(@PathVariable String numberPlate, @PathVariable(required = false, name = "driverType") DriverType
-                                    givenDriverType) {
+//    there is no need of passing driver type, REGULAR is default
+    @PostMapping(path = {"/start_parking_meter/{numberPlate}/{driverType}", "/start_parking_meter/{numberPlate}" })
+    public String startParkingMeter(@PathVariable String numberPlate,
+                                    @PathVariable(required = false, name = "driverType") DriverType givenDriverType) {
 
         logger.info("numberPlate: " + numberPlate +"; givenDriverType: " + givenDriverType);
 
-
-        return givenDriverType == null ? parkingService.initParkingActivity(numberPlate, DriverType.REGULAR) : parkingService.initParkingActivity(numberPlate, givenDriverType);
+        return givenDriverType == null ?
+                parkingService.initParkingActivity(numberPlate, DriverType.REGULAR) :
+                parkingService.initParkingActivity(numberPlate, givenDriverType);
     }
 
-    @PostMapping(path = "/stopMeter/{parkingCode}")
+    @PostMapping(path = "/stop_parking_meter/{parkingCode}")
     public ParkingBill stopParkingMeter(@PathVariable String parkingCode){
 
         return parkingService.finishParkingActivity(parkingCode);
     }
-
-    //start parking meter using request params (???),
-
 
 }

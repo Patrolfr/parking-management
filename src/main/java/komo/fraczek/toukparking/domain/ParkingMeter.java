@@ -9,11 +9,14 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 
 @Entity
 public class ParkingMeter {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     //    Holds parking ticket code generated for driver
@@ -31,33 +34,27 @@ public class ParkingMeter {
     private ParkingBill parkingBill;
 
 
-//    +1 becouse first hour also counts,
+    //    +1 becouse first hour also counts,
 //    maybe substract 10 mins to give driver some extra time(?)
     public int calculateParkingTimeInHours() {
         return (int) Duration.between(startedAt, stoppedAt).toHours() + 1;
     }
 
-
-    public ParkingMeter(String numberPlate, DriverType driverType) {
-
-//        this.parkingFee = 0.0;
-//        this.parkingStatus = ParkingStatus.OCCUPIED;
+    public ParkingMeter(ParkingBill parkingBill) {
+        this.parkingBill = parkingBill;
+        startedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         this.parkingCode = ParkingCodeGenerator.getCode();
-        this.startedAt = LocalDateTime.now();
     }
 
-
-//    counstructors, getters/setter
-
+    //    counstructors, getters/setter
     public ParkingMeter() {
     }
 
-    public ParkingMeter(String numberPlate, String parkingCode, LocalDateTime startedAt, ParkingStatus parkingStatus, DriverType driverType) {
-//        this.numberPlate = numberPlate;
+    public ParkingMeter(String parkingCode, LocalDateTime startedAt, LocalDateTime stoppedAt, ParkingBill parkingBill) {
         this.parkingCode = parkingCode;
         this.startedAt = startedAt;
-//        this.parkingStatus = parkingStatus;
-//        this.driverType = driverType;
+        this.stoppedAt = stoppedAt;
+        this.parkingBill = parkingBill;
     }
 
     public Long getId() {
@@ -67,15 +64,6 @@ public class ParkingMeter {
     public void setId(Long id) {
         Id = id;
     }
-
-
-//    public ParkingStatus getParkingStatus() {
-//        return parkingStatus;
-//    }
-
-//    public void setParkingStatus(ParkingStatus parkingStatus) {
-//        this.parkingStatus = parkingStatus;
-//    }
 
     public String getParkingCode() {
         return parkingCode;
@@ -113,7 +101,6 @@ public class ParkingMeter {
     public String toString() {
         return "ParkingMeter{" +
                 "Id=" + Id +
-//                ", parkingStatus=" + parkingStatus +
                 ", parkingCode='" + parkingCode + '\'' +
                 ", startedAt=" + startedAt +
                 ", stoppedAt=" + stoppedAt +

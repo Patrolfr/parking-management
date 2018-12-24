@@ -12,12 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ParkingRepository extends JpaRepository<ParkingMeter, Long> {
-
-//    Optional<ParkingMeter> findByNumberPlate(String s);
+public interface MeterRepository extends JpaRepository<ParkingMeter, Long> {
 
     Optional<ParkingMeter> findByParkingCode(String s);
-
-//    List<ParkingMeter> findAllByStoppedAtDate(LocalDate localDate);
 
 }
