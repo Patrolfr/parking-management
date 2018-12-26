@@ -7,6 +7,8 @@ import komo.fraczek.toukparking.service.ParkingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,17 +25,16 @@ public class OperatorController {
 
 
     @GetMapping(path = "/parking_bill/{numberPlate}")
-    public ParkingBill retrieveParkingBillByNumberPlate(@PathVariable String numberPlate) {
+    public ResponseEntity<ParkingBill> retrieveParkingBillByNumberPlate(@PathVariable String numberPlate) {
         logger.trace("Method call retrieveParkingBillByNumberPlate with PathVariable: " + numberPlate);
 
-        return parkingService.getBillByNumberPlateOrThrowEx(numberPlate);
+        return new ResponseEntity<>(parkingService.getBillByNumberPlateOrThrowEx(numberPlate), HttpStatus.OK);
     }
 
-    @GetMapping(path = "get_daily_income/{dateString}")
-    public double getDailyIncome(@PathVariable String dateString){
+    @GetMapping(path = "daily_income/{dateString}")
+    public ResponseEntity<Double> getDailyIncome(@PathVariable String dateString){
         logger.trace("Method call getDailyIncome with PathVariable: " + dateString);
 
-        return parkingService.calculateDailyIncome(LocalDate.parse(dateString));
+        return new ResponseEntity<>(parkingService.calculateDailyIncome(LocalDate.parse(dateString)), HttpStatus.OK );
     }
-
 }

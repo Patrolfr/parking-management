@@ -40,7 +40,6 @@ public class ParkingService {
 
 
     public String initParkingActivity(String numberPlate, DriverType driverType) {
-
 //        check if the the parking meter can be started for given vehicle number plate
         if(billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED).isPresent()){
            logger.error("Given number plate vehicle already exists in database and hasn't stopped the parking meter.");
@@ -104,7 +103,7 @@ public class ParkingService {
 
 
     public double calculateDailyIncome(LocalDate localDate) {
-//        sum all the fees from given day
+//        sum all of the fees from given day
         return billRepository.findByDate(localDate)
                                 .stream()
                                 .mapToDouble(ParkingBill::getParkingFee)

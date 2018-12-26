@@ -1,6 +1,5 @@
 package komo.fraczek.toukparking.domain;
 
-
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -13,20 +12,22 @@ public class ParkingBill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-//    Driver type
+    //    Driver type
     @Enumerated(EnumType.STRING)
     private DriverType driverType;
 
-//    Parking activity status
+    //    Parking activity status
     @Enumerated(EnumType.STRING)
     private ParkingStatus parkingStatus;
 
-//    Vehicle registration number
+    //    Vehicle registration number
     private String numberPlate;
 
     private int parkingTimeInHours;
 
-//    Bill issue date
+    //    Bill issue date
+//    @JsonDeserialize(using = LocalDateDeserializer.class)
+//    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;
 
     private double parkingFee;
@@ -38,8 +39,9 @@ public class ParkingBill {
         this.parkingStatus = ParkingStatus.OCCUPIED;
     }
 
-//
-    public ParkingBill() { }
+    //
+    public ParkingBill() {
+    }
 
     public ParkingBill(DriverType driverType, ParkingStatus parkingStatus, String numberPlate, int parkingTimeInHours, LocalDate date, double parkingFee) {
         this.driverType = driverType;
