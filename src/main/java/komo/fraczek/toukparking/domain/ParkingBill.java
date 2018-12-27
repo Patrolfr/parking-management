@@ -1,6 +1,7 @@
 package komo.fraczek.toukparking.domain;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
@@ -30,7 +31,7 @@ public class ParkingBill {
 //    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;
 
-    private double parkingFee;
+    private BigDecimal parkingFee;
 
 
     public ParkingBill(DriverType driverType, String numberPlate) {
@@ -39,11 +40,11 @@ public class ParkingBill {
         this.parkingStatus = ParkingStatus.OCCUPIED;
     }
 
-    //
+    
     public ParkingBill() {
     }
 
-    public ParkingBill(DriverType driverType, ParkingStatus parkingStatus, String numberPlate, int parkingTimeInHours, LocalDate date, double parkingFee) {
+    public ParkingBill(DriverType driverType, ParkingStatus parkingStatus, String numberPlate, int parkingTimeInHours, LocalDate date, BigDecimal parkingFee) {
         this.driverType = driverType;
         this.parkingStatus = parkingStatus;
         this.numberPlate = numberPlate;
@@ -68,11 +69,19 @@ public class ParkingBill {
         this.driverType = driverType;
     }
 
-    public double getParkingFee() {
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+
+    public BigDecimal getParkingFee() {
         return parkingFee;
     }
 
-    public void setParkingFee(double parkingFee) {
+    public void setParkingFee(BigDecimal parkingFee) {
         this.parkingFee = parkingFee;
     }
 

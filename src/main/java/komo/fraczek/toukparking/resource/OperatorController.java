@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @RestController
@@ -32,7 +33,7 @@ public class OperatorController {
     }
 
     @GetMapping(path = "daily_income/{dateString}")
-    public ResponseEntity<Double> getDailyIncome(@PathVariable String dateString){
+    public ResponseEntity<BigDecimal> getDailyIncome(@PathVariable String dateString){
         logger.trace("Method call getDailyIncome with PathVariable: " + dateString);
 
         return new ResponseEntity<>(parkingService.calculateDailyIncome(LocalDate.parse(dateString)), HttpStatus.OK );

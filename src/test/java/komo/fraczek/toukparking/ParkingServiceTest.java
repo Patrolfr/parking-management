@@ -13,6 +13,7 @@ import komo.fraczek.toukparking.service.ParkingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -72,7 +73,6 @@ public class ParkingServiceTest {
         String returnedCode = parkingService.initParkingActivity(NUMBER_PLATE, REGULAR);
         assertNotNull(returnedCode);
         assertEquals(returnedCode.length(), 7);
-//        assertTrue(returnedCode.trim(3));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ParkingServiceTest {
     public void when_finishParkingActivity_returns_ParkingBill() {
 //        prepare
 //        create the bill
-        ParkingBill bill = new ParkingBill(REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, 0.0);
+        ParkingBill bill = new ParkingBill(REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, BigDecimal.ZERO);
 //        create the meter
         ParkingMeter meter = new ParkingMeter(bill);
 //        set start time 2 hourse 31 minutes before stop time, expect 3 hours bill
@@ -121,7 +121,7 @@ public class ParkingServiceTest {
     public void when_getBillByNumberPlateOrThrowEx_returns_ParkingBill() {
 //        prepare
 //        create the bill
-        ParkingBill bill = new ParkingBill(REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, 0);
+        ParkingBill bill = new ParkingBill(REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, BigDecimal.ZERO);
 //        arrange
         when(billRepositoryMock.findByNumberPlateAndParkingStatus(NUMBER_PLATE, OCCUPIED)).thenReturn(Optional.of(bill));
 //        perform
@@ -131,7 +131,7 @@ public class ParkingServiceTest {
         assertEquals(returned.getDriverType(), bill.getDriverType());
         assertNull(returned.getDate());
         assertEquals(0, bill.getParkingTimeInHours());
-        assertEquals(0.0, bill.getParkingFee());
+        assertEquals(BigDecimal.ZERO, bill.getParkingFee());
     }
 
     @Test
@@ -146,16 +146,16 @@ public class ParkingServiceTest {
     public void calculateDailyIncome_test(){
 //        prepare
         ParkingBill parkingBill = new ParkingBill();
-        parkingBill.setParkingFee(1.1);
+        parkingBill.setParkingFee(BigDecimal.ONE);
         parkingBill.setDate(DATE);
 //        arrange
         when(billRepositoryMock.findByDate(DATE)).thenReturn(Arrays.asList(parkingBill, parkingBill, parkingBill));
 //        perform
-        double dailyIncome = parkingService.calculateDailyIncome(DATE);
-        double dailyIncomeFake = parkingService.calculateDailyIncome(DATE.minusDays(1));
+        BigDecimal dailyIncome = parkingService.calculateDailyIncome(DATE);
+        BigDecimal dailyIncomeFake = parkingService.calculateDailyIncome(DATE.minusDays(1));
 //        verify
-        assertEquals(dailyIncome, 3*1.1);
-        assertEquals(dailyIncomeFake, 0.0);
+        assertEquals(dailyIncome, BigDecimal.ONE.multiply(BigDecimal.valueOf(3)));
+        assertEquals(dailyIncomeFake, BigDecimal.ZERO);
     }
 
 

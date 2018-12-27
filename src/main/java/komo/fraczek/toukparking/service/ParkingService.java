@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -75,7 +76,7 @@ public class ParkingService {
             throw new ParkingCodeNotFoundException(parkingCode);
         }
 
-//        stop
+//        stop the meter
         meter.setStoppedAt(LocalDateTime.now());
 //        issue the bill
         parkingBill.setParkingTimeInHours(meter.calculateParkingTimeInHours());
@@ -97,17 +98,16 @@ public class ParkingService {
             logger.warn("Parking bill for plate number '" + numberPlate + "' does not exists. Throwing exception.");
             throw new PlateNumNotFoundException(numberPlate);
         }
-
         return byNumberPlate.get();
     }
 
 
-    public double calculateDailyIncome(LocalDate localDate) {
+    public BigDecimal calculateDailyIncome(LocalDate localDate) {
 //        sum all of the fees from given day
         return billRepository.findByDate(localDate)
                                 .stream()
-                                .mapToDouble(ParkingBill::getParkingFee)
-                                .sum();
+                                .map(ParkingBill::getParkingFee)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 
