@@ -1,5 +1,7 @@
 package komo.fraczek.toukparking.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,6 +31,7 @@ public class ParkingBill {
     //    Bill issue date
 //    @JsonDeserialize(using = LocalDateDeserializer.class)
 //    @JsonSerialize(using = LocalDateSerializer.class)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     private BigDecimal parkingFee;
@@ -40,7 +43,7 @@ public class ParkingBill {
         this.parkingStatus = ParkingStatus.OCCUPIED;
     }
 
-    
+
     public ParkingBill() {
     }
 

@@ -33,8 +33,6 @@ import static org.mockito.Mockito.when;
 
 public class ParkingServiceTest {
 
-    private static final LocalDateTime DATETIME1 = LocalDateTime.of(2010, 12, 18, 15, 15);
-
     private static final LocalDate DATE = LocalDate.of(2010, 12, 18);
 
     private static final String NUMBER_PLATE = "ABCD1234";
@@ -157,6 +155,5 @@ public class ParkingServiceTest {
         assertEquals(dailyIncome, BigDecimal.ONE.multiply(BigDecimal.valueOf(3)));
         assertEquals(dailyIncomeFake, BigDecimal.ZERO);
     }
-
 
 }
