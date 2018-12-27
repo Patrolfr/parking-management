@@ -4,7 +4,6 @@ package komo.fraczek.toukparking;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import komo.fraczek.toukparking.charge.DummyCurrencyRateProviderService;
 import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.domain.ParkingBill;
 import komo.fraczek.toukparking.resource.DriverController;
@@ -47,9 +46,6 @@ public class DriverControllerTest {
     @MockBean
     ParkingService parkingServiceMock;
 
-    @MockBean
-    DummyCurrencyRateProviderService currencyRateServiceMock;
-
     private static final String NUMBER_PLATE = "ABCD1234";
 
     @BeforeEach
@@ -58,7 +54,6 @@ public class DriverControllerTest {
 
     @Test
     public void test_startParkingMeter() throws Exception {
-        logger.trace("Method call test_startParkingMeter()");
 //        prepare
         String parkingCodeStub = "ABC-123";
         String numberPlateStub = "XZYK123";
@@ -95,10 +90,11 @@ public class DriverControllerTest {
 //        arrange
         when(parkingServiceMock.finishParkingActivity("PARKING_CODE")).thenReturn(billStub);
 //        execute
-        MvcResult mvcResult = mockMvc.perform(
-                MockMvcRequestBuilders.post("/stop_parking_meter/" + "PARKING_CODE")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        MvcResult mvcResult = mockMvc
+                .perform(
+                        MockMvcRequestBuilders.post("/stop_parking_meter/" + "PARKING_CODE")
+//                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+//                        .accept(MediaType.APPLICATION_JSON_UTF8)
                         .content(gson.toJson(billStub)))
                 .andReturn();
 

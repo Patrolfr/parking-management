@@ -8,10 +8,12 @@ import komo.fraczek.toukparking.exception.ParkingCodeNotFoundException;
 import komo.fraczek.toukparking.exception.PlateNumAlreadyExistsException;
 import komo.fraczek.toukparking.exception.PlateNumNotFoundException;
 import komo.fraczek.toukparking.service.BillRepository;
+import komo.fraczek.toukparking.service.CurrencyRateProviderService;
 import komo.fraczek.toukparking.service.MeterRepository;
 import komo.fraczek.toukparking.service.ParkingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -47,13 +49,19 @@ public class ParkingServiceTest {
 
     private BillRepository billRepositoryMock;
 
+    private CurrencyRateProviderService currencyRateProviderServiceMock;
+
     @BeforeEach
     public void setUp() {
         parkingService = new ParkingService();
+//
         meterRepositoryMock = mock(MeterRepository.class);
         billRepositoryMock = mock(BillRepository.class);
+        currencyRateProviderServiceMock = mock(CurrencyRateProviderService.class);
+//
         parkingService.setMeterRepository(meterRepositoryMock);
         parkingService.setBillRepository(billRepositoryMock);
+        parkingService.setCurrencyService(currencyRateProviderServiceMock);
     }
 
     @Test
@@ -96,6 +104,7 @@ public class ParkingServiceTest {
 //        arrange
         when(meterRepositoryMock.findByParkingCode(PARKING_CODE)).thenReturn(Optional.of(meter));
         when(billRepositoryMock.save(bill)).thenReturn(bill);
+        when(currencyRateProviderServiceMock.getCurrencyRate("PLN")).thenReturn(BigDecimal.ONE);
 //        execute
         ParkingBill returnedBill = parkingService.finishParkingActivity(PARKING_CODE);
 //        verify

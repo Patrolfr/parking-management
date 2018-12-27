@@ -1,9 +1,6 @@
 package komo.fraczek.toukparking.resource;
 
-import komo.fraczek.toukparking.charge.CurrencyRateProviderService;
 import komo.fraczek.toukparking.domain.DriverType;
-import komo.fraczek.toukparking.charge.ChargeCalculator;
-import komo.fraczek.toukparking.charge.DummyCurrencyRateProviderService;
 import komo.fraczek.toukparking.domain.ParkingBill;
 import komo.fraczek.toukparking.service.ParkingService;
 import org.slf4j.Logger;
@@ -22,17 +19,17 @@ public class DriverController {
 
     ParkingService parkingService;
 
-    CurrencyRateProviderService currencyService;
+//    CurrencyRateProviderService currencyService;
 
     @Autowired
     public void setParkingService(ParkingService parkingService) {
         this.parkingService = parkingService;
     }
 
-    @Autowired
-    public void setCurrencyService(CurrencyRateProviderService currencyService) {
-        this.currencyService = currencyService;
-    }
+//    @Autowired
+//    public void setCurrencyService(CurrencyRateProviderService currencyService) {
+//        this.currencyService = currencyService;
+//    }
 
     //    there is no need of passing driver type, REGULAR is default
     @PostMapping(path = {"/start_parking_meter/{numberPlate}/{driverType}", "/start_parking_meter/{numberPlate}" })
