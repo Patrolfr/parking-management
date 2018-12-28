@@ -1,2 +1,4 @@
 language: java
 jdk: oraclejdk8
+
+maven: 3.5.2
