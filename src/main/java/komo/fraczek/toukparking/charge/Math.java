@@ -21,8 +21,8 @@ public class Math {
 
     //     sumTerms sums up values of given number of geometric series terms
     static final BigDecimal calculateGeometricSeriesSum(int noOfTerms, double ratio) {
-        return IntStream.range(1, noOfTerms) //arrange
-                .mapToObj(in -> Math.countGeomSeriesTerm.apply(in, ratio)) //count
+        return IntStream.range(1, noOfTerms) //index
+                .mapToObj(in -> Math.countGeomSeriesTerm.apply(in, ratio)) //count value
                 .reduce(BigDecimal.ZERO, BigDecimal::add); //sum
     }
 

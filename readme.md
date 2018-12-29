@@ -1,0 +1,28 @@
+
+Service for managing the city parking spaces.
+=============================================
+
+Run the tests
+------------------
+
+Navigate to project root directory (`parking-management`).<br>
+```bash
+	mvn test
+```
+
+Tests are also performed by Travis CI after each git push.
+To view Travis CI tests results:
+Navigate to: 
+		https://travis-ci.com/Patrolfr/parking-management
+
+Build:<br>
+-----------
+Navigate to project root directory (`parking-management`).
+```bash
+	./run.sh
+```
+
+Test in the browser
+-------------------
+Check fake customer's user stories created with data.sql script with H2DB console:
+		http://localhost:8080/h2-console

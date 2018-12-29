@@ -26,7 +26,7 @@ public class ParkingMeter {
     //    Beggining of the activity
     private LocalDateTime startedAt;
 
-    //   atribute used in JpaRepository getByStoppedAtDate method for convenient daily income calculation
+    //   Ending of the activity
     private LocalDateTime stoppedAt;
 
 
@@ -42,7 +42,7 @@ public class ParkingMeter {
 
     public ParkingMeter(ParkingBill parkingBill) {
         this.parkingBill = parkingBill;
-        startedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        this.startedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         this.parkingCode = ParkingCodeGenerator.getCode();
     }
 
