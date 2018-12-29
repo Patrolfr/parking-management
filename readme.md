@@ -24,5 +24,9 @@ Navigate to project root directory (`parking-management`).
 
 Test in the browser
 -------------------
-Check fake customer's user stories created with data.sql script with H2DB console:
+Check fake customer's user stories created with data.sql script with H2DB console:<br>
 		http://localhost:8080/h2-console
+* Driver Class:	`org.h2.Driver`
+* JDBC URL: `jdbc:h2:mem:testdb`
+* User Name: `sa`
+
