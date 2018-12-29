@@ -26,9 +26,4 @@ public class EnumTest {
         assertNotNull(driverType);
     }
 
-    @Test
-    public void test(){
-        assertTrue(false);
-    }
-
 }
