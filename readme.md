@@ -2,6 +2,10 @@
 Service for managing the city parking spaces.
 =============================================
 
+<br>
+Model desription and assumpions are written down in `model_requirements.odt` file.
+<br>
+
 Run the tests
 ------------------
 
@@ -29,4 +33,5 @@ Check fake customer's user stories created with data.sql script with H2DB consol
 * Driver Class:	`org.h2.Driver`
 * JDBC URL: `jdbc:h2:mem:testdb`
 * User Name: `sa`
+
 
