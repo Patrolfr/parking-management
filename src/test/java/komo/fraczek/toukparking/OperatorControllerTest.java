@@ -4,11 +4,9 @@ package komo.fraczek.toukparking;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.domain.ParkingBill;
-import komo.fraczek.toukparking.resource.DriverController;
+import komo.fraczek.toukparking.resource.OperatorController;
 import komo.fraczek.toukparking.service.ParkingService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -17,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -35,10 +31,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(DriverController.class)
-public class DriverControllerTest {
+@WebMvcTest(OperatorController.class)
+public class OperatorControllerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DriverControllerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(OperatorControllerTest.class);
 
     @Autowired
     MockMvc mockMvc;
@@ -48,57 +44,46 @@ public class DriverControllerTest {
 
     private static final String NUMBER_PLATE = "ABCD1234";
 
-    @BeforeEach
-    public void setUp() {
-    }
+    private static final LocalDate DATE = LocalDate.of(2018, 12, 25);
+
+    private static final BigDecimal INCOME = new BigDecimal(122.99);
+
+    private static final int HOURS = 5;
 
     @Test
-    public void test_startParkingMeter() throws Exception {
-//        prepare
-        String parkingCodeStub = "ABC-123";
-        String numberPlateStub = "XZYK123";
-        ResponseEntity<String> responseEntityStub = new ResponseEntity<>(parkingCodeStub, HttpStatus.CREATED);
+    public void test_getDailyIncome() throws Exception{
+
 //        arrange
-        when(parkingServiceMock.initParkingActivity(any(String.class), any(DriverType.class))).thenReturn(parkingCodeStub);
+        when(parkingServiceMock.calculateDailyIncome(DATE)).thenReturn(INCOME);
 //        execute
-        MvcResult mvcResult =
-                mockMvc.perform(MockMvcRequestBuilders.post("/start_parking_meter/" + numberPlateStub))
-                        .andReturn();
-//        verify status
-        assertEquals(HttpStatus.CREATED.value(), mvcResult.getResponse().getStatus(), "Incorrect Response Status");
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/daily_income/" + DATE.toString())).andReturn();
 //        verify number of method calls
-        verify(parkingServiceMock).initParkingActivity(any(String.class), any(DriverType.class));
-//        verify content
-        String resultParkingCode = mvcResult.getResponse().getContentAsString();
-        assertEquals(resultParkingCode, parkingCodeStub);
+        verify(parkingServiceMock).calculateDailyIncome(any(LocalDate.class));
+//        verify value
+        assertEquals(INCOME, new BigDecimal( mvcResult.getResponse().getContentAsString() ));
+//        verify status
+        assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus(), "Incorrect Response Status");
     }
 
     @Test
-    public void test_stopParkingMeter() throws Exception {
+    public void test_retrieveParkingBillByNumberPlate() throws Exception{
 //        prepare json parser
-//        add 'custom' LocalDate deserializer(TypeAdapter) for gson (***)
-//        it is strange that Gson cannot deserialize LocalDate field
-//        which has been serialized by Gson... create custom TypeAdapter is the best fix I have found
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) ->
                                 LocalDate.parse(json.getAsJsonPrimitive().getAsString()))
                 .create();
 //        prepare parking bill stub
-        ParkingBill billStub = new ParkingBill(REGULAR, FINISHED, NUMBER_PLATE, 5,
-                    LocalDate.of(2018, 12, 25), BigDecimal.TEN);
+        ParkingBill billStub = new ParkingBill(REGULAR, FINISHED, NUMBER_PLATE, HOURS, DATE, BigDecimal.TEN);
 //        arrange
-        when(parkingServiceMock.finishParkingActivity("PARKING_CODE")).thenReturn(billStub);
+        when(parkingServiceMock.getBillByNumberPlateOrThrowEx(any(String.class))).thenReturn(billStub);
 //        execute
         MvcResult mvcResult = mockMvc
                 .perform(
-                        MockMvcRequestBuilders.post("/stop_parking_meter/" + "PARKING_CODE")
-//                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-//                        .accept(MediaType.APPLICATION_JSON_UTF8)
-                        .content(gson.toJson(billStub)))
+                    MockMvcRequestBuilders.get("/parking_bill/" + NUMBER_PLATE)
+                    .content(gson.toJson(billStub)))
                 .andReturn();
-
-//        ERROR WHEN PARSING LOCALDATE  -- resolved by custom deserializer(TypeAdapter) (***).
+//        get response
         ParkingBill responseBill = gson.fromJson(mvcResult.getResponse().getContentAsString(), ParkingBill.class);
 //        verify
         assertEquals(responseBill.getParkingStatus(), billStub.getParkingStatus());
@@ -107,7 +92,9 @@ public class DriverControllerTest {
         assertEquals(responseBill.getParkingTimeInHours(), billStub.getParkingTimeInHours());
         assertEquals(responseBill.getParkingFee(), billStub.getParkingFee());
 //        verify status
-        assertEquals(HttpStatus.ACCEPTED.value(), mvcResult.getResponse().getStatus(), "Incorrect Response Status");
+        assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus(), "Incorrect Response Status");
     }
+
+
 
 }

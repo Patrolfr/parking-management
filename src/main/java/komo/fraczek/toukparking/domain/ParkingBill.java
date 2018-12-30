@@ -1,32 +1,56 @@
 package komo.fraczek.toukparking.domain;
 
-import komo.fraczek.toukparking.domain.DriverType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+
+@Entity
 public class ParkingBill {
 
-    private String vehicleNumberPlate;
 
+    @javax.persistence.Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
+
+    //    Driver type
+    @Enumerated(EnumType.STRING)
     private DriverType driverType;
+
+    //    Parking activity status
+    @Enumerated(EnumType.STRING)
+    private ParkingStatus parkingStatus;
+
+    //    Vehicle registration number
+    private String numberPlate;
 
     private int parkingTimeInHours;
 
-    private double parkingFee;
+    //    Bill issue date
+    private LocalDate date;
+
+    private BigDecimal parkingFee;
+
+
+    public ParkingBill(DriverType driverType, String numberPlate) {
+        this.driverType = driverType;
+        this.numberPlate = numberPlate;
+        this.parkingStatus = ParkingStatus.OCCUPIED;
+    }
+
 
     public ParkingBill() {
     }
 
-
-    public ParkingBill(String vehicleNumberPlate, DriverType driverType, int parkingTimeInHours, double parkingFee) {
-        this.vehicleNumberPlate = vehicleNumberPlate;
+    public ParkingBill(DriverType driverType, ParkingStatus parkingStatus, String numberPlate, int parkingTimeInHours, LocalDate date, BigDecimal parkingFee) {
         this.driverType = driverType;
+        this.parkingStatus = parkingStatus;
+        this.numberPlate = numberPlate;
         this.parkingTimeInHours = parkingTimeInHours;
+        this.date = date;
         this.parkingFee = parkingFee;
-    }
-
-    public ParkingBill(int parkingTimeInHours, String vehicleNumberPlate, DriverType driverType) {
-        this.parkingTimeInHours = parkingTimeInHours;
-        this.vehicleNumberPlate = vehicleNumberPlate;
-        this.driverType = driverType;
     }
 
     public int getParkingTimeInHours() {
@@ -37,14 +61,6 @@ public class ParkingBill {
         this.parkingTimeInHours = parkingTimeInHours;
     }
 
-    public String getVehicleNumberPlate() {
-        return vehicleNumberPlate;
-    }
-
-    public void setVehicleNumberPlate(String vehicleNumberPlate) {
-        this.vehicleNumberPlate = vehicleNumberPlate;
-    }
-
     public DriverType getDriverType() {
         return driverType;
     }
@@ -53,11 +69,56 @@ public class ParkingBill {
         this.driverType = driverType;
     }
 
-    public double getParkingFee() {
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+
+    public BigDecimal getParkingFee() {
         return parkingFee;
     }
 
-    public void setParkingFee(double parkingFee) {
+    public void setParkingFee(BigDecimal parkingFee) {
         this.parkingFee = parkingFee;
+    }
+
+    public String getNumberPlate() {
+        return numberPlate;
+    }
+
+    public void setNumberPlate(String numberPlate) {
+        this.numberPlate = numberPlate;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public ParkingStatus getParkingStatus() {
+        return parkingStatus;
+    }
+
+    public void setParkingStatus(ParkingStatus parkingStatus) {
+        this.parkingStatus = parkingStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "ParkingBill{" +
+                "Id=" + Id +
+                ", driverType=" + driverType +
+                ", parkingStatus=" + parkingStatus +
+                ", numberPlate='" + numberPlate + '\'' +
+                ", parkingTimeInHours=" + parkingTimeInHours +
+                ", date=" + date +
+                ", parkingFee=" + parkingFee +
+                '}';
     }
 }
