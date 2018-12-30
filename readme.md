@@ -2,9 +2,7 @@
 Service for managing the city parking spaces.
 =============================================
 
-<br>
 Model desription and assumpions are written down in `model_requirements.odt` file.
-<br>
 
 Run the tests
 ------------------
