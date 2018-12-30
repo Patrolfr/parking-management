@@ -19,24 +19,17 @@ public class DriverController {
 
     ParkingService parkingService;
 
-//    CurrencyRateProviderService currencyService;
-
     @Autowired
     public void setParkingService(ParkingService parkingService) {
         this.parkingService = parkingService;
     }
-
-//    @Autowired
-//    public void setCurrencyService(CurrencyRateProviderService currencyService) {
-//        this.currencyService = currencyService;
-//    }
 
     //    there is no need of passing driver type, REGULAR is default
     @PostMapping(path = {"/start_parking_meter/{numberPlate}/{driverType}", "/start_parking_meter/{numberPlate}" })
     public ResponseEntity<String> startParkingMeter(@PathVariable String numberPlate,
                                     @PathVariable(required = false, name = "driverType") DriverType givenDriverType) {
 
-        logger.info("numberPlate: " + numberPlate +"; givenDriverType: " + givenDriverType);
+        logger.trace("Method call startParkingMeter with PathVariable numberPlate: " + numberPlate);
 
         String parkingCode = givenDriverType == null ?
                 parkingService.initParkingActivity(numberPlate, DriverType.REGULAR) :

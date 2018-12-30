@@ -1,7 +1,5 @@
 package komo.fraczek.toukparking.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,7 +7,6 @@ import java.time.LocalDate;
 
 @Entity
 public class ParkingBill {
-
 
     @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,17 +28,18 @@ public class ParkingBill {
     //    Bill issue date
     private LocalDate date;
 
+    //    Fee grows so fast that after few days it exceedes default DECIMAL(19, 2) range..
+    @Column(name = "PARKING_FEE", columnDefinition = "DECIMAL(30, 2)")
     private BigDecimal parkingFee;
 
+
+    public ParkingBill() {
+    }
 
     public ParkingBill(DriverType driverType, String numberPlate) {
         this.driverType = driverType;
         this.numberPlate = numberPlate;
         this.parkingStatus = ParkingStatus.OCCUPIED;
-    }
-
-
-    public ParkingBill() {
     }
 
     public ParkingBill(DriverType driverType, ParkingStatus parkingStatus, String numberPlate, int parkingTimeInHours, LocalDate date, BigDecimal parkingFee) {

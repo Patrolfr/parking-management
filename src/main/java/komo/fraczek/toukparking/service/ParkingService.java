@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -43,13 +44,14 @@ public class ParkingService {
 
     @Autowired
     public void setCurrencyService(CurrencyRateProviderService currencyService) {
+        //        inject real currency service here...
         this.currencyService = currencyService;
     }
 
     public String initParkingActivity(String numberPlate, DriverType driverType) {
 //        check if the the parking meter can be started for given vehicle number plate
         if (billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED).isPresent()) {
-            logger.error("Given number plate vehicle already exists in database and hasn't stopped the parking meter.");
+            logger.warn("Given number plate vehicle already exists in database and hasn't stopped the parking meter. Throwing exception.");
             throw new PlateNumAlreadyExistsException(numberPlate);
         }
 
@@ -88,10 +90,10 @@ public class ParkingService {
         parkingBill.setParkingStatus(ParkingStatus.FINISHED);
 //        calculate the fee
         BigDecimal fee = ChargeCalculator.calculateCharge(parkingBill.getParkingTimeInHours(), parkingBill.getDriverType());
-//        inject real currency service here...
+//        use real currency service here...
         BigDecimal currencyRate = currencyService.getCurrencyRate("PLN");
-//        set the fee
-        parkingBill.setParkingFee(fee.multiply(currencyRate));
+//        set the fee (use real currency precision provider...)
+        parkingBill.setParkingFee(fee.multiply(currencyRate).setScale(2, RoundingMode.CEILING));
 
         meterRepository.save(meter);
         return billRepository.save(parkingBill);
@@ -108,6 +110,7 @@ public class ParkingService {
         }
         return byNumberPlate.get();
     }
+
 
     public BigDecimal calculateDailyIncome(LocalDate localDate) {
 //        sum all of the fees from given day
