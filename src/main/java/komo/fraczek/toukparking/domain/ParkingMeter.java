@@ -16,10 +16,8 @@ public class ParkingMeter {
     //    Holds parking ticket code generated for driver
     private String parkingCode;
 
-    //    Beggining of the activity
     private LocalDateTime startedAt;
 
-    //   Ending of the activity
     private LocalDateTime stoppedAt;
 
     @OneToOne
@@ -31,34 +29,27 @@ public class ParkingMeter {
         return (int) Duration.between(startedAt, stoppedAt).toHours() + 1;
     }
 
-    public ParkingMeter(ParkingBill parkingBill) {
-        this.parkingBill = parkingBill;
-        this.startedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        this.parkingCode = ParkingCodeGenerator.getCode();
+    public void stop(){
+        this.stoppedAt = LocalDateTime.now();
     }
 
-    //   default counstructor, getters/setter
+    public static ParkingMeter createStarted(ParkingBill parkingBill){
+        ParkingMeter parkingMeter = new ParkingMeter();
+        parkingMeter.setParkingBill(parkingBill);
+        parkingMeter.setStartedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        parkingMeter.setParkingCode(ParkingCodeGenerator.getCode());
+        return parkingMeter;
+    }
+
     public ParkingMeter() {
-    }
-
-    public Long getId() {
-        return Id;
-    }
-
-    public void setId(Long id) {
-        Id = id;
-    }
-
-    public String getParkingCode() {
-        return parkingCode;
     }
 
     public void setParkingCode(String parkingCode) {
         this.parkingCode = parkingCode;
     }
 
-    public LocalDateTime getStartedAt() {
-        return startedAt;
+    public String getParkingCode() {
+        return parkingCode;
     }
 
     public void setStartedAt(LocalDateTime startedAt) {

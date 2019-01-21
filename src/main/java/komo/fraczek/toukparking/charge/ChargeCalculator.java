@@ -10,8 +10,8 @@ public class ChargeCalculator {
 
     public static BigDecimal calculateCharge(int numberOfHours, DriverType driverType){
 
-        double ratioRegular = 1.5;
-        double ratioDisabled = 1.2;
+        BigDecimal ratioRegular = new BigDecimal("1.5");
+        BigDecimal ratioDisabled = new BigDecimal("1.2");
 
         return driverType.equals(REGULAR)
                 ? Math.calculateGeometricSeriesSum(numberOfHours, ratioRegular).add(BigDecimal.ONE)

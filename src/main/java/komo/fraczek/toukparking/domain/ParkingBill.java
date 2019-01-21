@@ -1,31 +1,35 @@
 package komo.fraczek.toukparking.domain;
 
-import javax.persistence.*;
+import komo.fraczek.toukparking.charge.ChargeCalculator;
+
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.EnumType;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.Id;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 
 @Entity
 public class ParkingBill {
 
-    @javax.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    //    Driver type
     @Enumerated(EnumType.STRING)
     private DriverType driverType;
 
-    //    Parking activity status
     @Enumerated(EnumType.STRING)
     private ParkingStatus parkingStatus;
 
-    //    Vehicle registration number
     private String numberPlate;
 
     private int parkingTimeInHours;
 
-    //    Bill issue date
     private LocalDate date;
 
     //    Fee grows so fast that after few days it exceedes default DECIMAL(19, 2) range..
@@ -36,10 +40,17 @@ public class ParkingBill {
     public ParkingBill() {
     }
 
-    public ParkingBill(DriverType driverType, String numberPlate) {
-        this.driverType = driverType;
-        this.numberPlate = numberPlate;
+    public void issue(ParkingMeter parkingMeter){
+        this.parkingTimeInHours = parkingMeter.calculateParkingTimeInHours();
+        this.date = parkingMeter.getStoppedAt().toLocalDate();
         this.parkingStatus = ParkingStatus.OCCUPIED;
+    }
+
+    public static ParkingBill createOccupied(DriverType driverType, String numberPlate){
+        ParkingBill parkingBill = new ParkingBill();
+        parkingBill.setDriverType(driverType);
+        parkingBill.setNumberPlate(numberPlate);
+        return parkingBill;
     }
 
     public ParkingBill(DriverType driverType, ParkingStatus parkingStatus, String numberPlate, int parkingTimeInHours, LocalDate date, BigDecimal parkingFee) {

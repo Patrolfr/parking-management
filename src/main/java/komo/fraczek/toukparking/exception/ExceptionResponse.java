@@ -12,8 +12,6 @@ public class ExceptionResponse {
 
     private String details;
 
-    public ExceptionResponse() {
-    }
 
     public ExceptionResponse(LocalDateTime timestamp, String message, String desription, String details) {
         this.timestamp = timestamp;
@@ -26,31 +24,15 @@ public class ExceptionResponse {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getMessage() {
         return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getDesription() {
         return desription;
     }
 
-    public void setDesription(String desription) {
-        this.desription = desription;
-    }
-
     public String getDetails() {
         return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
     }
 }

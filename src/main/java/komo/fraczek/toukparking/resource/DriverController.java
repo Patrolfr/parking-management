@@ -17,10 +17,11 @@ public class DriverController {
 
     private static final Logger logger = LoggerFactory.getLogger(DriverController.class);
 
-    ParkingService parkingService;
 
-    @Autowired
-    public void setParkingService(ParkingService parkingService) {
+    private ParkingService parkingService;
+
+//    @Autowired
+    public DriverController(ParkingService parkingService) {
         this.parkingService = parkingService;
     }
 

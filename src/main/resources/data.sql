@@ -10,6 +10,7 @@ insert into parking_bill values (6, '2018-12-29', 'REGULAR', 'MGQ2124', 5.55, 'F
 --
 insert into parking_bill values (7, null, 'REGULAR', 'ASD2123', 0, 'OCCUPIED', 0);
 insert into parking_bill values (8, null, 'DISABLED', 'MGQ2124', 0, 'OCCUPIED', 0);
+insert into parking_bill values (9, null, 'DISABLED', 'LLW2124', 0, 'OCCUPIED', 0);
 
 --finished parkings
 --  12-28
@@ -23,6 +24,7 @@ insert into parking_meter values (6, 'KJS-417', '2018-12-29 13:20:00', '2018-12-
 -- -- -- --Occupied parkings
 insert into parking_meter values (7, 'TST-123', '2018-12-30 13:20:00', null, 7);
 insert into parking_meter values (8, 'STS-123', '2018-12-30 13:20:00', null, 8);
+insert into parking_meter values (9, 'STS-123', '2018-12-30 13:20:00', null, 9);
 
 
 

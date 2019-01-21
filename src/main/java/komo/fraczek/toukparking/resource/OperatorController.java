@@ -7,6 +7,7 @@ import komo.fraczek.toukparking.service.ParkingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,15 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 public class OperatorController {
 
     private static final Logger logger = LoggerFactory.getLogger(OperatorController.class);
 
-    @Autowired
-    ParkingService parkingService;
+    private ParkingService parkingService;
 
+//    @Autowired
+    public OperatorController(ParkingService parkingService) {
+        this.parkingService = parkingService;
+    }
 
     @GetMapping(path = "/parking_bill/{numberPlate}")
     public ResponseEntity<ParkingBill> retrieveParkingBillByNumberPlate(@PathVariable String numberPlate) {
@@ -32,10 +37,10 @@ public class OperatorController {
         return new ResponseEntity<>(parkingService.getBillByNumberPlateOrThrowEx(numberPlate), HttpStatus.OK);
     }
 
-    @GetMapping(path = "daily_income/{dateString}")
-    public ResponseEntity<BigDecimal> getDailyIncome(@PathVariable String dateString){
-        logger.trace("Method call getDailyIncome with PathVariable: " + dateString);
+    @GetMapping(path = "daily_income/{date}")
+    public ResponseEntity<BigDecimal> getDailyIncome(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date){
+        logger.trace("Method call getDailyIncome with PathVariable: " + date.toString());
 
-        return new ResponseEntity<>(parkingService.calculateDailyIncome(LocalDate.parse(dateString)), HttpStatus.OK );
+        return new ResponseEntity<>(parkingService.calculateDailyIncome(date), HttpStatus.OK );
     }
 }

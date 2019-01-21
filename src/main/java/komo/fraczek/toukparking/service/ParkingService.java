@@ -32,48 +32,33 @@ public class ParkingService {
 
     private CurrencyRateProviderService currencyService;
 
-    @Autowired
-    public void setMeterRepository(MeterRepository meterRepository) {
+//    @Autowired
+    public ParkingService(MeterRepository meterRepository, BillRepository billRepository, CurrencyRateProviderService currencyService) {
         this.meterRepository = meterRepository;
-    }
-
-    @Autowired
-    public void setBillRepository(BillRepository billRepository) {
         this.billRepository = billRepository;
-    }
-
-    @Autowired
-    public void setCurrencyService(CurrencyRateProviderService currencyService) {
-        //        inject real currency service here...
         this.currencyService = currencyService;
     }
 
     public String initParkingActivity(String numberPlate, DriverType driverType) {
 //        check if the the parking meter can be started for given vehicle number plate
-        if (billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED).isPresent()) {
+        if (billRepository.existsByNumberPlateAndParkingStatus(numberPlate, OCCUPIED)) {
             logger.warn("Given number plate vehicle already exists in database and hasn't stopped the parking meter. Throwing exception.");
             throw new PlateNumAlreadyExistsException(numberPlate);
         }
 
 //        prepare parking bill
-        ParkingBill parkingBill = billRepository.save(new ParkingBill(driverType, numberPlate));
+        ParkingBill parkingBill = billRepository.save(ParkingBill.createOccupied(driverType, numberPlate));
 //        start parking meter
-        ParkingMeter newParkingMeter = meterRepository.save(new ParkingMeter(parkingBill));
+        ParkingMeter newParkingMeter = meterRepository.save(ParkingMeter.createStarted(parkingBill));
 //        return parking code
         return newParkingMeter.getParkingCode();
     }
 
 
     public ParkingBill finishParkingActivity(String parkingCode) {
-//        get the parking meter
-        Optional<ParkingMeter> meterByCode = meterRepository.findByParkingCode(parkingCode);
-//        verify if the meter is present
-        if (!meterByCode.isPresent()) {
-            logger.warn("Parking meter is not present. Throwing exception.");
-            throw new ParkingCodeNotFoundException(parkingCode);
-        }
 
-        ParkingMeter meter = meterByCode.get();
+        ParkingMeter meter = meterRepository.findByParkingCode(parkingCode).orElseThrow(() -> new ParkingCodeNotFoundException(parkingCode));
+
         ParkingBill parkingBill = meter.getParkingBill();
 
 //        verify if the meter can be stopped
@@ -82,17 +67,12 @@ public class ParkingService {
             throw new ParkingCodeNotFoundException(parkingCode);
         }
 
-//        stop the meter
-        meter.setStoppedAt(LocalDateTime.now());
-//        issue the bill
-        parkingBill.setParkingTimeInHours(meter.calculateParkingTimeInHours());
-        parkingBill.setDate(meter.getStoppedAt().toLocalDate());
-        parkingBill.setParkingStatus(ParkingStatus.FINISHED);
-//        calculate the fee
+        meter.stop();
+        parkingBill.issue(meter);
+
         BigDecimal fee = ChargeCalculator.calculateCharge(parkingBill.getParkingTimeInHours(), parkingBill.getDriverType());
-//        use real currency service here...
+
         BigDecimal currencyRate = currencyService.getCurrencyRate("PLN");
-//        set the fee (use real currency precision provider...)
         parkingBill.setParkingFee(fee.multiply(currencyRate).setScale(2, RoundingMode.CEILING));
 
         meterRepository.save(meter);
