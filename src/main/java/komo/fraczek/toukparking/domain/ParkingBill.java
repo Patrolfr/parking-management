@@ -43,7 +43,7 @@ public class ParkingBill {
     public void issue(ParkingMeter parkingMeter){
         this.parkingTimeInHours = parkingMeter.calculateParkingTimeInHours();
         this.date = parkingMeter.getStoppedAt().toLocalDate();
-        this.parkingStatus = ParkingStatus.OCCUPIED;
+        this.parkingStatus = ParkingStatus.FINISHED;
     }
 
     public static ParkingBill createOccupied(DriverType driverType, String numberPlate){

@@ -89,7 +89,7 @@ public class ParkingServiceTest {
 //        create the parking bill
         ParkingBill bill = ParkingBill.createOccupied(REGULAR, NUMBER_PLATE);
 //        create the parking meter
-        when(billRepositoryMock.findByNumberPlateAndParkingStatus(NUMBER_PLATE, OCCUPIED)).thenReturn(Optional.of(bill));
+        when(billRepositoryMock.existsByNumberPlateAndParkingStatus(NUMBER_PLATE, OCCUPIED)).thenReturn(true);
 //        execute
         assertThrows(PlateNumAlreadyExistsException.class, () -> parkingService.initParkingActivity(NUMBER_PLATE, REGULAR));
     }
