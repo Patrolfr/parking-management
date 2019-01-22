@@ -37,7 +37,7 @@ public class ParkingBill {
     private BigDecimal parkingFee;
 
 
-    public ParkingBill() {
+    private ParkingBill() {
     }
 
     public void issue(ParkingMeter parkingMeter){

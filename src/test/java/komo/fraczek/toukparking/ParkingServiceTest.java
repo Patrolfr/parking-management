@@ -154,11 +154,10 @@ public class ParkingServiceTest {
     @Test
     public void calculateDailyIncome_test(){
 //        prepare
-        ParkingBill parkingBill = new ParkingBill();
-        parkingBill.setParkingFee(BigDecimal.ONE);
-        parkingBill.setDate(DATE);
+//        create the bill
+        ParkingBill bill = new ParkingBill(REGULAR, OCCUPIED, NUMBER_PLATE, 1, DATE, BigDecimal.ONE);
 //        arrange
-        when(billRepositoryMock.findByDate(DATE)).thenReturn(Arrays.asList(parkingBill, parkingBill, parkingBill));
+        when(billRepositoryMock.findByDate(DATE)).thenReturn(Arrays.asList(bill, bill, bill));
 //        perform
         BigDecimal dailyIncome = parkingService.calculateDailyIncome(DATE);
         BigDecimal dailyIncomeFake = parkingService.calculateDailyIncome(DATE.minusDays(1));
