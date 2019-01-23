@@ -4,6 +4,7 @@ package komo.fraczek.toukparking.resource;
 import komo.fraczek.toukparking.domain.ParkingBill;
 import komo.fraczek.toukparking.service.MeterRepository;
 import komo.fraczek.toukparking.service.ParkingService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
+@RequiredArgsConstructor
 public class OperatorController {
 
     private static final Logger logger = LoggerFactory.getLogger(OperatorController.class);
 
-    private ParkingService parkingService;
-
-//    @Autowired
-    public OperatorController(ParkingService parkingService) {
-        this.parkingService = parkingService;
-    }
+    private final ParkingService parkingService;
 
     @GetMapping(path = "/parking_bill/{numberPlate}")
     public ResponseEntity<ParkingBill> retrieveParkingBillByNumberPlate(@PathVariable String numberPlate) {

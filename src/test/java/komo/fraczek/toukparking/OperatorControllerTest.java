@@ -73,7 +73,7 @@ public class OperatorControllerTest {
     @Test
     void test_retrieveParkingBillByNumberPlate() throws Exception{
 
-        ParkingBill billStub = new ParkingBill(REGULAR, FINISHED, NUMBER_PLATE, HOURS, DATE, BigDecimal.TEN);
+        ParkingBill billStub = new ParkingBill(1L, REGULAR, FINISHED, NUMBER_PLATE, HOURS, DATE, BigDecimal.TEN);
 
         when(parkingServiceMock.getBillByNumberPlateOrThrowEx(any(String.class))).thenReturn(billStub);
 

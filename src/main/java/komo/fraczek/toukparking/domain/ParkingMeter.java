@@ -1,12 +1,19 @@
 package komo.fraczek.toukparking.domain;
 
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ParkingMeter {
 
     @Id
@@ -23,9 +30,8 @@ public class ParkingMeter {
     @OneToOne
     private ParkingBill parkingBill;
 
-    //    maybe substract 10 mins to give driver some extra time(?)
     //    +1 becouse first hour also counts,
-    public int calculateParkingTimeInHours() {
+    int calculateParkingTimeInHours() {
         return (int) Duration.between(startedAt, stoppedAt).toHours() + 1;
     }
 
@@ -35,51 +41,9 @@ public class ParkingMeter {
 
     public static ParkingMeter createStarted(ParkingBill parkingBill){
         ParkingMeter parkingMeter = new ParkingMeter();
-        parkingMeter.setParkingBill(parkingBill);
-        parkingMeter.setStartedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-        parkingMeter.setParkingCode(ParkingCodeGenerator.getCode());
+        parkingMeter.parkingBill = parkingBill;
+        parkingMeter.startedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        parkingMeter.parkingCode = ParkingCodeGenerator.getCode();
         return parkingMeter;
-    }
-
-    public ParkingMeter() {
-    }
-
-    public void setParkingCode(String parkingCode) {
-        this.parkingCode = parkingCode;
-    }
-
-    public String getParkingCode() {
-        return parkingCode;
-    }
-
-    public void setStartedAt(LocalDateTime startedAt) {
-        this.startedAt = startedAt;
-    }
-
-    public LocalDateTime getStoppedAt() {
-        return stoppedAt;
-    }
-
-    public void setStoppedAt(LocalDateTime stoppedAt) {
-        this.stoppedAt = stoppedAt;
-    }
-
-    public ParkingBill getParkingBill() {
-        return parkingBill;
-    }
-
-    public void setParkingBill(ParkingBill parkingBill) {
-        this.parkingBill = parkingBill;
-    }
-
-    @Override
-    public String toString() {
-        return "ParkingMeter{" +
-                "Id=" + Id +
-                ", parkingCode='" + parkingCode + '\'' +
-                ", startedAt=" + startedAt +
-                ", stoppedAt=" + stoppedAt +
-                ", parkingBill=" + parkingBill +
-                '}';
     }
 }

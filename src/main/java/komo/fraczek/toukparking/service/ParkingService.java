@@ -8,6 +8,7 @@ import komo.fraczek.toukparking.domain.ParkingStatus;
 import komo.fraczek.toukparking.exception.ParkingCodeNotFoundException;
 import komo.fraczek.toukparking.exception.PlateNumAlreadyExistsException;
 import komo.fraczek.toukparking.exception.PlateNumNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +23,17 @@ import java.util.Optional;
 import static komo.fraczek.toukparking.domain.ParkingStatus.OCCUPIED;
 
 @Service
+@RequiredArgsConstructor
 public class ParkingService {
 
     private static final Logger logger = LoggerFactory.getLogger(ParkingService.class);
 
-    private MeterRepository meterRepository;
+    private final MeterRepository meterRepository;
 
-    private BillRepository billRepository;
+    private final BillRepository billRepository;
 
-    private CurrencyRateProviderService currencyService;
+    private final CurrencyRateProviderService currencyService;
 
-//    @Autowired
-    public ParkingService(MeterRepository meterRepository, BillRepository billRepository, CurrencyRateProviderService currencyService) {
-        this.meterRepository = meterRepository;
-        this.billRepository = billRepository;
-        this.currencyService = currencyService;
-    }
 
     public String initParkingActivity(String numberPlate, DriverType driverType) {
 //        check if the the parking meter can be started for given vehicle number plate
@@ -57,7 +53,8 @@ public class ParkingService {
 
     public ParkingBill finishParkingActivity(String parkingCode) {
 
-        ParkingMeter meter = meterRepository.findByParkingCode(parkingCode).orElseThrow(() -> new ParkingCodeNotFoundException(parkingCode));
+        ParkingMeter meter = meterRepository.findByParkingCode(parkingCode)
+                                            .orElseThrow(() -> new ParkingCodeNotFoundException(parkingCode));
 
         ParkingBill parkingBill = meter.getParkingBill();
 
@@ -81,14 +78,8 @@ public class ParkingService {
 
 
     public ParkingBill getBillByNumberPlateOrThrowEx(String numberPlate) {
-//        get the bill
-        Optional<ParkingBill> byNumberPlate = billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED);
-//        verify if the bill is present
-        if (!byNumberPlate.isPresent()) {
-            logger.warn("Parking bill for plate number '" + numberPlate + "' does not exists. Throwing exception.");
-            throw new PlateNumNotFoundException(numberPlate);
-        }
-        return byNumberPlate.get();
+        return billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED)
+                .orElseThrow(() -> new PlateNumNotFoundException(numberPlate));
     }
 
 
