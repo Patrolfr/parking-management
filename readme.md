@@ -21,7 +21,7 @@ Build:<br>
 -----------
 Navigate to project root directory (`parking-management`).
 ```bash
-	./run.sh
+	./start.sh
 ```
 
 Test in the browser
