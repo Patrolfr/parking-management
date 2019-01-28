@@ -10,11 +10,10 @@ public class ChargeCalculator {
 
     public static BigDecimal calculateCharge(int numberOfHours, DriverType driverType){
 
-        BigDecimal ratioRegular = new BigDecimal("1.5");
-        BigDecimal ratioDisabled = new BigDecimal("1.2");
+        AbstractRatioProvider ratioProvider = RatioProviderFactory.getProvider(driverType);
 
         return driverType.equals(REGULAR)
-                ? Math.calculateGeometricSeriesSum(numberOfHours, ratioRegular).add(BigDecimal.ONE)
-                : Math.calculateGeometricSeriesSum(numberOfHours, ratioDisabled);
+                ? Math.calculateGeometricSeriesSum(numberOfHours, ratioProvider.getRatio()).add(BigDecimal.ONE)
+                : Math.calculateGeometricSeriesSum(numberOfHours, ratioProvider.getRatio());
     }
 }

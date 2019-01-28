@@ -1,4 +1,8 @@
 package komo.fraczek.toukparking.charge;
 
-public class AbstractRatioProvider {
+import java.math.BigDecimal;
+
+abstract class AbstractRatioProvider {
+
+    abstract BigDecimal getRatio();
 }
