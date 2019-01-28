@@ -3,6 +3,7 @@ package komo.fraczek.toukparking.resource;
 import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.domain.ParkingBill;
 import komo.fraczek.toukparking.service.ParkingService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class DriverController {
 
     private static final Logger logger = LoggerFactory.getLogger(DriverController.class);
 
-    ParkingService parkingService;
-
-    @Autowired
-    public void setParkingService(ParkingService parkingService) {
-        this.parkingService = parkingService;
-    }
+    private final ParkingService parkingService;
 
     //    there is no need of passing driver type, REGULAR is default
     @PostMapping(path = {"/start_parking_meter/{numberPlate}/{driverType}", "/start_parking_meter/{numberPlate}" })

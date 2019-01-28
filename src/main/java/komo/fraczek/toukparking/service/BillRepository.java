@@ -13,10 +13,9 @@ import java.util.Optional;
 @Repository
 public interface BillRepository extends JpaRepository<ParkingBill, Long> {
 
-
-    Optional<ParkingBill> findByNumberPlate(String s);
-
     Optional<ParkingBill> findByNumberPlateAndParkingStatus(String numberplate, ParkingStatus parkingStatus);
+
+    boolean existsByNumberPlateAndParkingStatus(String numberPlate, ParkingStatus parkingStatus);
 
     List<ParkingBill> findByDate(LocalDate localDate);
 

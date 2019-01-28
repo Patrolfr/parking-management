@@ -41,7 +41,7 @@ public class ParkingServiceTest {
 
     private static final String PARKING_CODE = "XYZ-123";
 
-    private static final int TIME_HOURS = 3;
+    private static final int TIME_HOURS = 1;
 
     private ParkingService parkingService;
 
@@ -52,25 +52,21 @@ public class ParkingServiceTest {
     private CurrencyRateProviderService currencyRateProviderServiceMock;
 
     @BeforeEach
-    public void setUp() {
-        parkingService = new ParkingService();
-//
+    void setUp() {
         meterRepositoryMock = mock(MeterRepository.class);
         billRepositoryMock = mock(BillRepository.class);
         currencyRateProviderServiceMock = mock(CurrencyRateProviderService.class);
-//
-        parkingService.setMeterRepository(meterRepositoryMock);
-        parkingService.setBillRepository(billRepositoryMock);
-        parkingService.setCurrencyService(currencyRateProviderServiceMock);
+
+        parkingService = new ParkingService(meterRepositoryMock, billRepositoryMock, currencyRateProviderServiceMock);
     }
 
     @Test
-    public void when_initParkingActivity_returns_ParkingCode(){
+    void when_initParkingActivity_returns_ParkingCode(){
 //        prepare
 //        create the parking bill
-        ParkingBill bill = new ParkingBill(REGULAR, NUMBER_PLATE);
+        ParkingBill bill = ParkingBill.createOccupied(REGULAR, NUMBER_PLATE);
 //        create the parking meter
-        ParkingMeter meter = new ParkingMeter(bill);
+        ParkingMeter meter = ParkingMeter.createStarted(bill);
 //        arrange
         when(billRepositoryMock.findByNumberPlateAndParkingStatus(any(String.class), any(ParkingStatus.class))).thenReturn(Optional.empty());
         when(billRepositoryMock.save(any(ParkingBill.class))).thenReturn(bill);
@@ -82,25 +78,23 @@ public class ParkingServiceTest {
     }
 
     @Test
-    public void when_initParkingActivity_throws_Exception(){
+    void when_initParkingActivity_throws_Exception(){
 //        prepare
 //        create the parking bill
-        ParkingBill bill = new ParkingBill(REGULAR, NUMBER_PLATE);
+        ParkingBill bill = ParkingBill.createOccupied(REGULAR, NUMBER_PLATE);
 //        create the parking meter
-        when(billRepositoryMock.findByNumberPlateAndParkingStatus(NUMBER_PLATE, OCCUPIED)).thenReturn(Optional.of(bill));
+        when(billRepositoryMock.existsByNumberPlateAndParkingStatus(NUMBER_PLATE, OCCUPIED)).thenReturn(true);
 //        execute
         assertThrows(PlateNumAlreadyExistsException.class, () -> parkingService.initParkingActivity(NUMBER_PLATE, REGULAR));
     }
 
     @Test
-    public void when_finishParkingActivity_returns_ParkingBill() {
+    void when_finishParkingActivity_returns_ParkingBill() {
 //        prepare
 //        create the bill
-        ParkingBill bill = new ParkingBill(REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, BigDecimal.ZERO);
+        ParkingBill bill = new ParkingBill(1L, REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, BigDecimal.ZERO);
 //        create the meter
-        ParkingMeter meter = new ParkingMeter(bill);
-//        set start time 2 hourse 31 minutes before stop time, expect 3 hours bill
-        meter.setStartedAt(LocalDateTime.now().minusHours(2).minusMinutes(31));
+        ParkingMeter meter = ParkingMeter.createStarted(bill);
 //        arrange
         when(meterRepositoryMock.findByParkingCode(PARKING_CODE)).thenReturn(Optional.of(meter));
         when(billRepositoryMock.save(bill)).thenReturn(bill);
@@ -117,7 +111,7 @@ public class ParkingServiceTest {
     }
 
     @Test
-    public void when_finishParkingActivity_throws_Exception() {
+    void when_finishParkingActivity_throws_Exception() {
 //        arrange
         when(meterRepositoryMock.findByParkingCode(any(String.class))).thenReturn(Optional.empty());
 //        verify
@@ -125,10 +119,10 @@ public class ParkingServiceTest {
     }
 
     @Test
-    public void when_getBillByNumberPlateOrThrowEx_returns_ParkingBill() {
+    void when_getBillByNumberPlateOrThrowEx_returns_ParkingBill() {
 //        prepare
 //        create the bill
-        ParkingBill bill = new ParkingBill(REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, BigDecimal.ZERO);
+        ParkingBill bill = new ParkingBill(1L, REGULAR, OCCUPIED, NUMBER_PLATE, 0, null, BigDecimal.ZERO);
 //        arrange
         when(billRepositoryMock.findByNumberPlateAndParkingStatus(NUMBER_PLATE, OCCUPIED)).thenReturn(Optional.of(bill));
 //        perform
@@ -142,7 +136,7 @@ public class ParkingServiceTest {
     }
 
     @Test
-    public void when_getBillByNumberPlateOrThrowEx_throws_Exception() {
+    void when_getBillByNumberPlateOrThrowEx_throws_Exception() {
 //        arrange
         when(billRepositoryMock.findByNumberPlateAndParkingStatus(any(String.class), any(ParkingStatus.class))).thenReturn(Optional.empty());
 //        verify
@@ -150,13 +144,12 @@ public class ParkingServiceTest {
     }
 
     @Test
-    public void calculateDailyIncome_test(){
+    void calculateDailyIncome_test(){
 //        prepare
-        ParkingBill parkingBill = new ParkingBill();
-        parkingBill.setParkingFee(BigDecimal.ONE);
-        parkingBill.setDate(DATE);
+//        create the bill
+        ParkingBill bill = new ParkingBill(1L, REGULAR, OCCUPIED, NUMBER_PLATE, 1, DATE, BigDecimal.ONE);
 //        arrange
-        when(billRepositoryMock.findByDate(DATE)).thenReturn(Arrays.asList(parkingBill, parkingBill, parkingBill));
+        when(billRepositoryMock.findByDate(DATE)).thenReturn(Arrays.asList(bill, bill, bill));
 //        perform
         BigDecimal dailyIncome = parkingService.calculateDailyIncome(DATE);
         BigDecimal dailyIncomeFake = parkingService.calculateDailyIncome(DATE.minusDays(1));
