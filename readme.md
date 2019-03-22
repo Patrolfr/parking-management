@@ -12,7 +12,7 @@ Navigate to project root directory (`parking-management`).<br>
 
 Tests are also performed by Travis CI after each git push.
 To view Travis CI tests results:
-Navigate to: 
+Navigate to:<br>
 		https://travis-ci.com/Patrolfr/parking-management
 
 Build:<br>
