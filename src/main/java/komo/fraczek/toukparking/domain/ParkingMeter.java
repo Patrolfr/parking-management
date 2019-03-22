@@ -30,7 +30,7 @@ public class ParkingMeter {
     @OneToOne
     private ParkingBill parkingBill;
 
-    //    +1 becouse first hour also counts,
+    //    +1 because first hour also counts,
     int calculateParkingTimeInHours() {
         return (int) Duration.between(startedAt, stoppedAt).toHours() + 1;
     }
