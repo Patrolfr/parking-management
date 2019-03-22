@@ -8,12 +8,14 @@ import komo.fraczek.toukparking.domain.ParkingStatus;
 import komo.fraczek.toukparking.exception.ParkingCodeNotFoundException;
 import komo.fraczek.toukparking.exception.PlateNumAlreadyExistsException;
 import komo.fraczek.toukparking.exception.PlateNumNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -21,57 +23,39 @@ import java.util.Optional;
 import static komo.fraczek.toukparking.domain.ParkingStatus.OCCUPIED;
 
 @Service
+@RequiredArgsConstructor
 public class ParkingService {
 
     private static final Logger logger = LoggerFactory.getLogger(ParkingService.class);
 
-    private MeterRepository meterRepository;
+    private final MeterRepository meterRepository;
 
-    private BillRepository billRepository;
+    private final BillRepository billRepository;
 
-    private CurrencyRateProviderService currencyService;
+    private final CurrencyRateProviderService currencyService;
 
-    @Autowired
-    public void setMeterRepository(MeterRepository meterRepository) {
-        this.meterRepository = meterRepository;
-    }
-
-    @Autowired
-    public void setBillRepository(BillRepository billRepository) {
-        this.billRepository = billRepository;
-    }
-
-    @Autowired
-    public void setCurrencyService(CurrencyRateProviderService currencyService) {
-        this.currencyService = currencyService;
-    }
 
     public String initParkingActivity(String numberPlate, DriverType driverType) {
 //        check if the the parking meter can be started for given vehicle number plate
-        if (billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED).isPresent()) {
-            logger.error("Given number plate vehicle already exists in database and hasn't stopped the parking meter.");
+        if (billRepository.existsByNumberPlateAndParkingStatus(numberPlate, OCCUPIED)) {
+            logger.warn("Given number plate vehicle already exists in database and hasn't stopped the parking meter. Throwing exception.");
             throw new PlateNumAlreadyExistsException(numberPlate);
         }
 
 //        prepare parking bill
-        ParkingBill parkingBill = billRepository.save(new ParkingBill(driverType, numberPlate));
+        ParkingBill parkingBill = billRepository.save(ParkingBill.createOccupied(driverType, numberPlate));
 //        start parking meter
-        ParkingMeter newParkingMeter = meterRepository.save(new ParkingMeter(parkingBill));
+        ParkingMeter newParkingMeter = meterRepository.save(ParkingMeter.createStarted(parkingBill));
 //        return parking code
         return newParkingMeter.getParkingCode();
     }
 
 
     public ParkingBill finishParkingActivity(String parkingCode) {
-//        get the parking meter
-        Optional<ParkingMeter> meterByCode = meterRepository.findByParkingCode(parkingCode);
-//        verify if the meter is present
-        if (!meterByCode.isPresent()) {
-            logger.warn("Parking meter is not present. Throwing exception.");
-            throw new ParkingCodeNotFoundException(parkingCode);
-        }
 
-        ParkingMeter meter = meterByCode.get();
+        ParkingMeter meter = meterRepository.findByParkingCode(parkingCode)
+                                            .orElseThrow(() -> new ParkingCodeNotFoundException(parkingCode));
+
         ParkingBill parkingBill = meter.getParkingBill();
 
 //        verify if the meter can be stopped
@@ -80,18 +64,13 @@ public class ParkingService {
             throw new ParkingCodeNotFoundException(parkingCode);
         }
 
-//        stop the meter
-        meter.setStoppedAt(LocalDateTime.now());
-//        issue the bill
-        parkingBill.setParkingTimeInHours(meter.calculateParkingTimeInHours());
-        parkingBill.setDate(meter.getStoppedAt().toLocalDate());
-        parkingBill.setParkingStatus(ParkingStatus.FINISHED);
-//        calculate the fee
+        meter.stop();
+        parkingBill.issue(meter);
+
         BigDecimal fee = ChargeCalculator.calculateCharge(parkingBill.getParkingTimeInHours(), parkingBill.getDriverType());
-//        inject real currency service here...
+
         BigDecimal currencyRate = currencyService.getCurrencyRate("PLN");
-//        set the fee
-        parkingBill.setParkingFee(fee.multiply(currencyRate));
+        parkingBill.setParkingFee(fee.multiply(currencyRate).setScale(2, RoundingMode.CEILING));
 
         meterRepository.save(meter);
         return billRepository.save(parkingBill);
@@ -99,15 +78,10 @@ public class ParkingService {
 
 
     public ParkingBill getBillByNumberPlateOrThrowEx(String numberPlate) {
-//        get the bill
-        Optional<ParkingBill> byNumberPlate = billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED);
-//        verify if the bill is present
-        if (!byNumberPlate.isPresent()) {
-            logger.warn("Parking bill for plate number '" + numberPlate + "' does not exists. Throwing exception.");
-            throw new PlateNumNotFoundException(numberPlate);
-        }
-        return byNumberPlate.get();
+        return billRepository.findByNumberPlateAndParkingStatus(numberPlate, OCCUPIED)
+                .orElseThrow(() -> new PlateNumNotFoundException(numberPlate));
     }
+
 
     public BigDecimal calculateDailyIncome(LocalDate localDate) {
 //        sum all of the fees from given day

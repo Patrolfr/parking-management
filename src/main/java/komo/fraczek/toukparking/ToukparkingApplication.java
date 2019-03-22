@@ -13,7 +13,6 @@ public class ToukparkingApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(ToukparkingApplication.class, args);
-//		System.out.println("Hello in toukparikng REST");
 	}
 
 }

@@ -2,6 +2,8 @@
 Service for managing the city parking spaces.
 =============================================
 
+Model desription and assumpions are written down in `model_requirements.odt` file.
+
 Run the tests
 ------------------
 
@@ -19,7 +21,7 @@ Build:<br>
 -----------
 Navigate to project root directory (`parking-management`).
 ```bash
-	./run.sh
+	./start.sh
 ```
 
 Test in the browser
@@ -29,4 +31,5 @@ Check fake customer's user stories created with data.sql script with H2DB consol
 * Driver Class:	`org.h2.Driver`
 * JDBC URL: `jdbc:h2:mem:testdb`
 * User Name: `sa`
+
 

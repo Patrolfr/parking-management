@@ -8,7 +8,6 @@ import komo.fraczek.toukparking.domain.DriverType;
 import komo.fraczek.toukparking.domain.ParkingBill;
 import komo.fraczek.toukparking.resource.DriverController;
 import komo.fraczek.toukparking.service.ParkingService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -16,27 +15,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDate;
 
 import static komo.fraczek.toukparking.domain.DriverType.REGULAR;
 import static komo.fraczek.toukparking.domain.ParkingStatus.FINISHED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(DriverController.class)
-public class DriverControllerTest {
+class DriverControllerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(DriverControllerTest.class);
 
@@ -48,66 +48,52 @@ public class DriverControllerTest {
 
     private static final String NUMBER_PLATE = "ABCD1234";
 
-    @BeforeEach
-    public void setUp() {
-    }
+    private Gson gson = createWithLocalDateAdapter();
 
-    @Test
-    public void test_startParkingMeter() throws Exception {
-//        prepare
-        String parkingCodeStub = "ABC-123";
-        String numberPlateStub = "XZYK123";
-        ResponseEntity<String> responseEntityStub = new ResponseEntity<>(parkingCodeStub, HttpStatus.CREATED);
-//        arrange
-        when(parkingServiceMock.initParkingActivity(any(String.class), any(DriverType.class))).thenReturn(parkingCodeStub);
-//        execute
-        MvcResult mvcResult =
-                mockMvc.perform(MockMvcRequestBuilders.post("/start_parking_meter/" + numberPlateStub))
-                        .andReturn();
-//        verify status
-        assertEquals(HttpStatus.CREATED.value(), mvcResult.getResponse().getStatus(), "Incorrect Response Status");
-//        verify number of method calls
-        verify(parkingServiceMock).initParkingActivity(any(String.class), any(DriverType.class));
-//        verify content
-        String resultParkingCode = mvcResult.getResponse().getContentAsString();
-        assertEquals(resultParkingCode, parkingCodeStub);
-    }
-
-    @Test
-    public void test_stopParkingMeter() throws Exception {
-//        prepare json parser
-//        add 'custom' LocalDate deserializer(TypeAdapter) for gson (***)
-//        it is strange that Gson cannot deserialize LocalDate field
-//        which has been serialized by Gson... create custom TypeAdapter is the best fix I have found
-        Gson gson = new GsonBuilder()
+    static Gson createWithLocalDateAdapter(){
+        return new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) ->
                                 LocalDate.parse(json.getAsJsonPrimitive().getAsString()))
                 .create();
-//        prepare parking bill stub
-        ParkingBill billStub = new ParkingBill(REGULAR, FINISHED, NUMBER_PLATE, 5,
-                    LocalDate.of(2018, 12, 25), BigDecimal.TEN);
-//        arrange
-        when(parkingServiceMock.finishParkingActivity("PARKING_CODE")).thenReturn(billStub);
-//        execute
-        MvcResult mvcResult = mockMvc
-                .perform(
-                        MockMvcRequestBuilders.post("/stop_parking_meter/" + "PARKING_CODE")
-//                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-//                        .accept(MediaType.APPLICATION_JSON_UTF8)
-                        .content(gson.toJson(billStub)))
-                .andReturn();
+    }
 
-//        ERROR WHEN PARSING LOCALDATE  -- resolved by custom deserializer(TypeAdapter) (***).
+    private MvcResult doRequest(URI uri) throws Exception{
+        return mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, uri)).andReturn();
+    }
+
+    @Test
+    void test_startParkingMeter() throws Exception {
+
+        String parkingCodeStub = "ABC-123";
+        String numberPlateStub = "XZYK123";
+
+        when(parkingServiceMock.initParkingActivity(any(String.class), any(DriverType.class))).thenReturn(parkingCodeStub);
+
+        MvcResult mvcResult = doRequest(new URI("/start_parking_meter/" + numberPlateStub));
+        String resultParkingCode = mvcResult.getResponse().getContentAsString();
+
+        assertEquals(HttpStatus.CREATED.value(), mvcResult.getResponse().getStatus(), "Incorrect Response Status");
+        verify(parkingServiceMock).initParkingActivity(any(String.class), any(DriverType.class));
+        assertEquals(resultParkingCode, parkingCodeStub);
+    }
+
+    @Test
+    void test_stopParkingMeter() throws Exception {
+
+        ParkingBill billStub = new ParkingBill(1L, REGULAR, FINISHED, NUMBER_PLATE, 5,
+                    LocalDate.of(2018, 12, 25), BigDecimal.TEN);
+
+        when(parkingServiceMock.finishParkingActivity("PARKING_CODE")).thenReturn(billStub);
+
+        MvcResult mvcResult = doRequest(new URI("/stop_parking_meter/" + "PARKING_CODE"));
         ParkingBill responseBill = gson.fromJson(mvcResult.getResponse().getContentAsString(), ParkingBill.class);
-//        verify
+
         assertEquals(responseBill.getParkingStatus(), billStub.getParkingStatus());
         assertEquals(responseBill.getDate(), billStub.getDate());
         assertEquals(responseBill.getDriverType(), billStub.getDriverType());
         assertEquals(responseBill.getParkingTimeInHours(), billStub.getParkingTimeInHours());
         assertEquals(responseBill.getParkingFee(), billStub.getParkingFee());
-//        verify status
         assertEquals(HttpStatus.ACCEPTED.value(), mvcResult.getResponse().getStatus(), "Incorrect Response Status");
     }
-
 }
